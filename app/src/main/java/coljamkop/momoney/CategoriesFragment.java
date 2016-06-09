@@ -11,9 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import coljamkop.momoney.dummy.DummyContent;
-import coljamkop.momoney.dummy.DummyContent.DummyItem;
-
-import java.util.List;
+import coljamkop.momoney.dummy.DummyContent.Budget;
 
 /**
  * A fragment representing a list of Items.
@@ -104,6 +102,6 @@ public class CategoriesFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(Budget item);
     }
 }

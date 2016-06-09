@@ -16,12 +16,12 @@ public class DummyContent {
     /**
      * An array of sample (dummy) items.
      */
-    public static final List<DummyItem> ITEMS = new ArrayList<DummyItem>();
+    public static final List<Budget> ITEMS = new ArrayList<Budget>();
 
     /**
      * A map of sample (dummy) items, by ID.
      */
-    public static final Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
+    public static final Map<String, Budget> ITEM_MAP = new HashMap<String, Budget>();
 
     private static final int COUNT = 25;
 
@@ -32,13 +32,13 @@ public class DummyContent {
         }
     }
 
-    private static void addItem(DummyItem item) {
+    private static void addItem(Budget item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
     }
 
-    private static DummyItem createDummyItem(int position) {
-        return new DummyItem(String.valueOf(position), "Category " + position, makeDetails(position));
+    private static Budget createDummyItem(int position) {
+        return new Budget(String.valueOf(position), "Category " + position, makeDetails(position));
     }
 
     private static String makeDetails(int position) {
@@ -53,12 +53,13 @@ public class DummyContent {
     /**
      * A dummy item representing a piece of content.
      */
-    public static class DummyItem {
+    public static class Budget {
         public final String id;
         public final String content;
         public final String details;
+        List<Month> months;
 
-        public DummyItem(String id, String content, String details) {
+        public Budget(String id, String content, String details) {
             this.id = id;
             this.content = content;
             this.details = details;

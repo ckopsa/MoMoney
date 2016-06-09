@@ -1,30 +1,34 @@
 package coljamkop.momoney.dummy;
 
+import java.util.Date;
+
 /**
  * Created by Aghbac on 6/8/16.
  */
 public class Expense {
+
     private double total;
-    private int date;
+    private String date;
+
+    public Expense(double expense) {
+        total = expense;
+        setDate();
+    }
 
     public double getTotal() {
         return total;
     }
 
-    public void setTotal(float total) {
-        this.total = total;
+    public void setTotal(double Expense) {
+        total = Expense;
     }
 
-    public int getDate() {
+    public void setDate() {
+        Date d = new Date();
+        date = d.toString();
+    }
+
+    public String getDate() {
         return date;
-    }
-
-    public void setDate(int date) {
-        this.date = date;
-    }
-
-    public Expense(double total, int date) {
-        this.total = total;
-        this.date = date;
     }
 }

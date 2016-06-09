@@ -1,12 +1,9 @@
 package coljamkop.momoney;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,7 +12,7 @@ import coljamkop.momoney.dummy.DummyContent;
 public class MainActivity extends AppCompatActivity implements CategoriesFragment.OnListFragmentInteractionListener {
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onListFragmentInteraction(DummyContent.Budget item) {
 
     }
 

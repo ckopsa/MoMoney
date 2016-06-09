@@ -7,21 +7,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import coljamkop.momoney.CategoriesFragment.OnListFragmentInteractionListener;
-import coljamkop.momoney.dummy.DummyContent.DummyItem;
+import coljamkop.momoney.dummy.DummyContent.Budget;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link Budget} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<MyCategoriesRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final List<Budget> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyCategoriesRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public MyCategoriesRecyclerViewAdapter(List<Budget> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -60,7 +60,7 @@ public class MyCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<MyCate
         public final View mView;
 //        public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
+        public Budget mItem;
 
         public ViewHolder(View view) {
             super(view);

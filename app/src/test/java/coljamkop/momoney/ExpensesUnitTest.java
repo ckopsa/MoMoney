@@ -1,19 +1,13 @@
 package coljamkop.momoney;
 
+/**
+ * Created by emi_lion91 on 6/8/2016.
+ */
 import org.junit.Test;
-
 import coljamkop.momoney.dummy.Expenses;
-
 import static org.junit.Assert.*;
 
-/**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
- */
-public class ExampleUnitTest {
-    @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
-    }
+public class ExpensesUnitTest {
 
     @Test
     public void There_isExpense() throws Exception{

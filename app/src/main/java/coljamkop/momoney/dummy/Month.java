@@ -7,4 +7,13 @@ import java.util.List;
  */
 public class Month {
     List<Category> categoryList;
+
+
+public float calcTotal() {
+    return 0;
+}
+
+    public Boolean isInGoal() {
+        return false;
+    }
 }

@@ -10,8 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import coljamkop.momoney.dummy.DummyContent;
-import coljamkop.momoney.dummy.DummyContent.Budget;
+import coljamkop.momoney.Content.DummyContent;
+import coljamkop.momoney.Content.DummyContent.Budget;
 
 /**
  * A fragment representing a list of Items.

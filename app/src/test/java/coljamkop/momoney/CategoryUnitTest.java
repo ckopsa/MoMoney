@@ -2,8 +2,8 @@ package coljamkop.momoney;
 
 import org.junit.Test;
 
-import coljamkop.momoney.dummy.Category;
-import coljamkop.momoney.dummy.Expense;
+import coljamkop.momoney.Content.Category;
+import coljamkop.momoney.Content.Expense;
 
 import static org.junit.Assert.*;
 
@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 public class CategoryUnitTest {
     @Test
     public void isInGoal_isCorrect() throws Exception {
-        Category category = new Category(0.0, 20.0);
+        Category category = new Category(null, "New Category", 20.0);
         // $0.00 <= $20.00
         assertEquals(true, category.isInGoal());
         category.addExpense(new Expense(10.0));
@@ -30,7 +30,7 @@ public class CategoryUnitTest {
     @Test
     public void total_isCorrect() throws Exception {
         double total = 0;
-        Category category = new Category(0.0, 20.0);
+        Category category = new Category(null, "New Category", 0.0);
         for(int i = 0; i < 10; i++) {
             category.addExpense(new Expense(10.0));
             total += 10.0;

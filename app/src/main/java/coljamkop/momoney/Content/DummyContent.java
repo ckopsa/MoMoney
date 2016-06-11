@@ -1,4 +1,4 @@
-package coljamkop.momoney.dummy;
+package coljamkop.momoney.Content;
 
 import java.util.ArrayList;
 import java.util.HashMap;

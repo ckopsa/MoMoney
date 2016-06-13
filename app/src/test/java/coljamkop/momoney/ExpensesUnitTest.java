@@ -7,8 +7,7 @@ import org.junit.Test;
 
 import java.util.Date;
 
-import coljamkop.momoney.dummy.Expense;
-
+import coljamkop.momoney.Content.Expense;
 
 import static org.junit.Assert.*;
 

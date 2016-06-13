@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import coljamkop.momoney.CategoriesFragment.OnListFragmentInteractionListener;
-import coljamkop.momoney.dummy.DummyContent.Budget;
+import coljamkop.momoney.Content.DummyContent.Budget;
 
 import java.util.List;
 

@@ -7,7 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import coljamkop.momoney.dummy.DummyContent;
+import coljamkop.momoney.Content.DummyContent;
 
 public class MainActivity extends AppCompatActivity implements CategoriesFragment.OnListFragmentInteractionListener {
 

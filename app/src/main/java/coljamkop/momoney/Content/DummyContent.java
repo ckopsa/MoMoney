@@ -1,4 +1,4 @@
-package coljamkop.momoney.dummy;
+package coljamkop.momoney.Content;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ public class DummyContent {
     /**
      * A map of sample (dummy) items, by ID.
      */
-    public static final Map<String, Budget> ITEM_MAP = new HashMap<String, Budget>();
+    public static final Map<String, Budget> ITEM_MAP = new HashMap<>();
 
     private static final int COUNT = 25;
 

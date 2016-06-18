@@ -9,10 +9,26 @@ import java.util.List;
  * Created by Aghbac on 6/8/16.
  */
 public class Category implements Budgetable {
-    List<Expense> expenseList;
-    String categoryName;
-    double total;
-    double goal;
+    private List<Expense> expenseList;
+    private String categoryName;
+    private double total;
+    private double goal;
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    public void setGoal(double goal) {
+        this.goal = goal;
+    }
 
     public Category(@Nullable List<Expense> expenseList, String categoryName, double goal) {
         this.expenseList = expenseList;

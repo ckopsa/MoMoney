@@ -22,7 +22,13 @@
 
     <Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/button10" android:text="9" android:layout_toEndOf="@+id/button9" android:layout_above="@+id/button7"/>
 
-    <Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_alignStart="@+id/button" android:id="@+id/button11" android:text="<-" android:layout_above="@+id/button13"/>
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignStart="@+id/button"
+        android:id="@+id/button11"
+        android:text="@string/katesthing"
+        android:layout_above="@+id/button13"/>
 
     <Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/button12" android:text="add" android:layout_toEndOf="@+id/button4" android:layout_below="@+id/button2"/>
 

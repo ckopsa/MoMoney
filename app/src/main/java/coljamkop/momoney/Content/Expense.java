@@ -5,6 +5,10 @@ import java.util.Date;
 /**
  * Created by Aghbac on 6/8/16.
  */
+
+/**
+ * Stores the expense data including: total, date of purchase
+ */
 public class Expense {
 
     private double total;
@@ -12,22 +16,34 @@ public class Expense {
 
     public Expense(double expense) {
         total = expense;
-        setDate();
+        this.date = new Date().toString();
     }
 
+    /**
+     * @return total amount of expense
+     */
     public double getTotal() {
         return total;
     }
 
-    public void setTotal(double Expense) {
-        total = Expense;
+    /**
+     * @param expenseTotal total amount of the expense
+     */
+    public void setTotal(double expenseTotal) {
+        total = expenseTotal;
     }
 
-    public void setDate() {
-        Date d = new Date();
-        date = d.toString();
+
+    /**
+     * @param date purchase date of the expense
+     */
+    public void setDate(Date date) {
+        this.date = date.toString();
     }
 
+    /**
+     * @return returns purchase date of expense as string
+     */
     public String getDate() {
         return date;
     }

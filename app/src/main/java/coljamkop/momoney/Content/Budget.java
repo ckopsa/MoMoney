@@ -5,20 +5,30 @@ import java.util.Deque;
 import java.util.Stack;
 
 /**
- * Created by Aghbac on 6/10/16.
+ * Represents our entire budget including all months/categories/expenses
  */
 public class Budget {
     private Deque<Month> monthStack;
 
+    /**
+     * Creates an ArrayDeque for the month stack
+     */
     public Budget() {
         this.monthStack = new ArrayDeque<>();
-        monthStack.push(new Month(2016, 1, null));
+        //monthStack.push(new Month(2016, 1, null));
     }
 
+    /**
+     * Returns the most recent Month
+     * @return most recent month
+     */
     public Month getCurrentMonth() {
         return monthStack.peek();
     }
 
+    /**
+     * Rolls the month over to the next month
+     */
     public void monthRollover() {
         if (monthStack != null) {
             Month oldMonth = monthStack.peek();

@@ -1,5 +1,6 @@
 package coljamkop.momoney.Content;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -11,10 +12,10 @@ import java.util.Date;
  */
 public class Expense {
 
-    private double total;
+    private BigDecimal total;
     private String date;
 
-    public Expense(double expense) {
+    public Expense(BigDecimal expense) {
         total = expense;
         this.date = new Date().toString();
     }
@@ -22,14 +23,14 @@ public class Expense {
     /**
      * @return total amount of expense
      */
-    public double getTotal() {
+    public BigDecimal getTotal() {
         return total;
     }
 
     /**
      * @param expenseTotal total amount of the expense
      */
-    public void setTotal(double expenseTotal) {
+    public void setTotal(BigDecimal expenseTotal) {
         total = expenseTotal;
     }
 

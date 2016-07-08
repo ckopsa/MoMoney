@@ -15,7 +15,7 @@ public class Budget {
      */
     public Budget() {
         this.monthStack = new ArrayDeque<>();
-        //monthStack.push(new Month(2016, 1, null));
+        monthStack.push(new Month(2016, 1, null));
     }
 
     /**

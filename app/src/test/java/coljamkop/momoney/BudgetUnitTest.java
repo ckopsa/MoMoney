@@ -2,15 +2,14 @@ package coljamkop.momoney;
 
 import org.junit.Test;
 
+import java.math.BigDecimal;
+
 import coljamkop.momoney.Content.Budget;
 import coljamkop.momoney.Content.Category;
 import coljamkop.momoney.Content.Month;
 
 import static org.junit.Assert.*;
 
-/**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
- */
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
  */
@@ -21,37 +20,37 @@ public class BudgetUnitTest {
         Month oldMonth = budget.getCurrentMonth();
 
         // give month data
-        oldMonth.addCategory(new Category(null, "Groceries", 100.0));
-        oldMonth.addCategory(new Category(null, "Dates", 10.0));
-        oldMonth.addCategory(new Category(null, "Fast Food", 15.0));
-        oldMonth.getCategory("Groceries").addExpense(30.0);
-        oldMonth.getCategory("Dates").addExpense(8.0);
-        oldMonth.getCategory("Fast Food").addExpense(5.0);
+        oldMonth.addCategory(new Category(null, "Groceries", new BigDecimal(100.0)));
+        oldMonth.addCategory(new Category(null, "Dates", new BigDecimal(10.0)));
+        oldMonth.addCategory(new Category(null, "Fast Food", new BigDecimal(15.0)));
+        oldMonth.getCategory("Groceries").addExpense(new BigDecimal(30.0));
+        oldMonth.getCategory("Dates").addExpense(new BigDecimal(8.0));
+        oldMonth.getCategory("Fast Food").addExpense(new BigDecimal(5.0));
 
         // check data
         for (Category category :
                 oldMonth.getCategories()) {
             if(category.getCategoryName().equals("Groceries")) {
-                assertEquals(30.00, category.getTotal(), 0.0);
-                assertEquals(100.00, category.getGoal(), 0.0);
+                assert(category.getTotal().compareTo(new BigDecimal(30.0)) == 0);
+                assert(category.getGoal().compareTo(new BigDecimal(100.0)) == 0);
             }
             if(category.getCategoryName().equals("Dates")) {
-                assertEquals(8.00, category.getTotal(), 0.0);
-                assertEquals(10.00, category.getGoal(), 0.0);
+                assert(category.getTotal().compareTo(new BigDecimal(8.0)) == 0);
+                assert(category.getGoal().compareTo(new BigDecimal(10.0)) == 0);
             }
             if(category.getCategoryName().equals("Fast Food")) {
-                assertEquals(5.0, category.getTotal(), 0.0);
-                assertEquals(15.00, category.getGoal(), 0.0);
+                assert(category.getTotal().compareTo(new BigDecimal(5.0)) == 0);
+                assert(category.getGoal().compareTo(new BigDecimal(15.0)) == 0);
             }
         }
 
         // month rolls over
         budget.monthRollover();
-        
+
         // check categories for 0.00 total
         for (Category category :
                 budget.getCurrentMonth().getCategories()) {
-            assertEquals(0.00, category.getTotal(), 0.0);
+            assert(category.getTotal().compareTo(new BigDecimal(0.00)) == 0);
         }
     }
 

@@ -10,8 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import coljamkop.momoney.Content.DummyContent;
-import coljamkop.momoney.Content.DummyContent.Budget;
+import coljamkop.momoney.Content.BudgetContent;
+import coljamkop.momoney.Content.Category;
+import coljamkop.momoney.RecylerViewAdapters.MyCategoriesRecyclerViewAdapter;
 
 /**
  * A fragment representing a list of Items.
@@ -56,6 +57,7 @@ public class CategoriesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_categories_list, container, false);
+        RecyclerView expenseList = (RecyclerView) view.findViewById(R.id.expandable_expense_list);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -66,7 +68,7 @@ public class CategoriesFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyCategoriesRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new MyCategoriesRecyclerViewAdapter(BudgetContent.getThisMonth().getCategories(), mListener));
         }
         return view;
     }
@@ -100,6 +102,8 @@ public class CategoriesFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(Budget item);
+        void onListFragmentInteraction(Category category);
+
+        void onAddExpenseButtonInteraction(Category category);
     }
 }

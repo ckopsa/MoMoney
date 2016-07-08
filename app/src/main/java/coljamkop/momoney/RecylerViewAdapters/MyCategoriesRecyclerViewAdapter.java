@@ -1,15 +1,20 @@
-package coljamkop.momoney;
+package coljamkop.momoney.RecylerViewAdapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
-import coljamkop.momoney.CategoriesFragment.OnListFragmentInteractionListener;
-import coljamkop.momoney.Content.DummyContent.Budget;
+import org.w3c.dom.Text;
 
 import java.util.List;
+
+import coljamkop.momoney.CategoriesFragment.OnListFragmentInteractionListener;
+import coljamkop.momoney.Content.Budget;
+import coljamkop.momoney.Content.Category;
+import coljamkop.momoney.R;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Budget} and makes a call to the
@@ -18,10 +23,10 @@ import java.util.List;
  */
 public class MyCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<MyCategoriesRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Budget> mValues;
+    private final List<Category> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyCategoriesRecyclerViewAdapter(List<Budget> items, OnListFragmentInteractionListener listener) {
+    public MyCategoriesRecyclerViewAdapter(List<Category> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -35,18 +40,13 @@ public class MyCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<MyCate
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-//        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
-
-        holder.mView.setOnClickListener(new View.OnClickListener() {
+        holder.mCategory = mValues.get(position);
+        holder.mContentView.setText(mValues.get(position).getCategoryName());
+        holder.mCategoryAmount.setText(holder.mCategory.getDollarTotal());
+        holder.mAddExpenseButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
-                }
+            public void onClick(View view) {
+                mListener.onAddExpenseButtonInteraction(holder.mCategory);
             }
         });
     }
@@ -58,15 +58,19 @@ public class MyCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<MyCate
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-//        public final TextView mIdView;
         public final TextView mContentView;
-        public Budget mItem;
+        public final TextView mCategoryAmount;
+        public final ImageButton mAddExpenseButton;
+        public final ImageButton mListExpenseButton;
+        public Category mCategory;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-//            mIdView = (TextView) view.findViewById(R.id.id);
             mContentView = (TextView) view.findViewById(R.id.category_name_text);
+            mAddExpenseButton = (ImageButton) view.findViewById(R.id.add_expense_button);
+            mListExpenseButton = (ImageButton) view.findViewById(R.id.list_expense_button);
+            mCategoryAmount = (TextView) view.findViewById(R.id.category_total_text);
         }
 
         @Override

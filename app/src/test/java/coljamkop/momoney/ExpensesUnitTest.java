@@ -5,6 +5,7 @@ package coljamkop.momoney;
  */
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import coljamkop.momoney.Content.Expense;
@@ -15,19 +16,19 @@ public class ExpensesUnitTest {
 
     @Test
     public void There_isExpense() throws Exception{
-        Expense exp = new Expense(123.00);
-        assertEquals(exp.getTotal(), 123.00, 0);
+        Expense exp = new Expense(new BigDecimal(123.00));
+        assertEquals(exp.getTotal().compareTo(new BigDecimal(123.00)), 0);
 
-        Expense exp1 = new Expense(55.33);
-        assertEquals(exp1.getTotal(),55.33, 0);
+        Expense exp1 = new Expense(new BigDecimal(55.33));
+        assertEquals(exp1.getTotal().compareTo(new BigDecimal(55.33)), 0);
 
-        Expense exp2 = new Expense(23.21);
-        assertEquals(exp2.getTotal(), 23.21, 0);
+        Expense exp2 = new Expense(new BigDecimal(23.21));
+        assertEquals(exp2.getTotal().compareTo(new BigDecimal(23.21)), 0);
     }
 
     @Test
     public void There_isDate() throws Exception{
-        Expense exp = new Expense(100.00);
+        Expense exp = new Expense(new BigDecimal(100.0));
         Date d = new Date();
         String date = d.toString();
 

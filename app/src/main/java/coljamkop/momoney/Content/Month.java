@@ -2,6 +2,7 @@ package coljamkop.momoney.Content;
 
 import android.support.annotation.Nullable;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,14 +16,14 @@ public class Month implements Budgetable {
     List<Category> categoryList;
     int year;
     int month;
-    double total;
-    double goal;
+    BigDecimal total;
+    BigDecimal goal;
 
     public Month(int year, int month, @Nullable List<Category> categoryList) {
         this.year = year;
         this.month = month;
-        this.goal = 0.0;
-        this.total = 0.0;
+        this.goal = new BigDecimal(0.0);
+        this.total = new BigDecimal(0.0);
         if (categoryList == null) {
             this.categoryMap = null;
             this.categoryList = null;
@@ -43,17 +44,17 @@ public class Month implements Budgetable {
         categoryMap.put(category.getCategoryName(), category);
         categoryList.add(category);
 
-        this.goal += category.getGoal();
-        this.total += category.getTotal();
+        this.goal.add(category.getGoal());
+        this.total.add(category.getTotal());
     }
 
     @Override
     public boolean isInGoal() {
-        return total <= goal;
+        return total.compareTo(goal) <= 0;
     }
 
     @Override
-    public double getTotal() {
+    public BigDecimal getTotal() {
         return total;
     }
 

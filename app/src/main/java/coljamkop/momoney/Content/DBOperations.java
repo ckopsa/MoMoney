@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.math.BigDecimal;
 import java.security.PublicKey;
 
 /**
@@ -74,12 +75,12 @@ public class DBOperations extends SQLiteOpenHelper {
      * @param total Total of the expense
      * @param date The date of the expense
      */
-    public void putInfoCurrent(DBOperations dop, String cat, double total, String date){
+    public void putInfoCurrent(DBOperations dop, String cat, BigDecimal total, String date){
         SQLiteDatabase db = dop.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
         cv.put(DBData.CurrentInfo.CATEGORY, cat);
-        cv.put(DBData.CurrentInfo.TOTAL, total);
+        cv.put(DBData.CurrentInfo.TOTAL, total.doubleValue());
         cv.put(DBData.CurrentInfo.DATE, date);
         db.insert(DBData.CurrentInfo.TABLE_NAME, null, cv);
         Log.i("Database operations", "Expense saved");
@@ -106,13 +107,13 @@ public class DBOperations extends SQLiteOpenHelper {
      * @param goal Goal for that Month
      * @param metGoal If the goal was met or not
      */
-    public void putInfoMonth(DBOperations dop, String year, String month, double total, String goal, Boolean metGoal){
+    public void putInfoMonth(DBOperations dop, String year, String month, BigDecimal total, String goal, Boolean metGoal){
         SQLiteDatabase db = dop.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
         cv.put(DBData.MonthInfo.YEAR, year);
         cv.put(DBData.MonthInfo.MONTH, month);
-        cv.put(DBData.MonthInfo.TOTAL, total);
+        cv.put(DBData.MonthInfo.TOTAL, total.doubleValue());
         cv.put(DBData.MonthInfo.GOAL, goal);
         cv.put(DBData.MonthInfo.METGOAL, metGoal);
         db.insert(DBData.CurrentInfo.TABLE_NAME, null, cv);

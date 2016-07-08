@@ -2,6 +2,7 @@ package coljamkop.momoney.Content;
 
 import android.support.annotation.Nullable;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +12,8 @@ import java.util.List;
 public class Category implements Budgetable {
     private List<Expense> expenseList;
     private String categoryName;
-    private double total;
-    private double goal;
+    private BigDecimal total;
+    private BigDecimal goal;
 
     /**
      * @return name of category
@@ -31,14 +32,14 @@ public class Category implements Budgetable {
     /**
      * @param total sets the total of the category
      */
-    public void setTotal(double total) {
+    public void setTotal(BigDecimal total) {
         this.total = total;
     }
 
     /**
      * @param goal sets the goal for the category
      */
-    public void setGoal(double goal) {
+    public void setGoal(BigDecimal goal) {
         this.goal = goal;
     }
 
@@ -49,30 +50,28 @@ public class Category implements Budgetable {
      * @param categoryName name for new category
      * @param goal budgetable goal for new category
      */
-    public Category(@Nullable List<Expense> expenseList, String categoryName, double goal) {
-        this.expenseList = expenseList;
-        this.categoryName = categoryName;
-        if(expenseList != null) {
-            for (Expense expense:
-                 expenseList) {
-             total += expense.getTotal();
+    public Category(@Nullable List<Expense> expenseList, String categoryName, BigDecimal goal) {
+        this.expenseList = new ArrayList<>();
+        this.total = new BigDecimal(0.0);
+        if (expenseList != null) {
+            for (Expense expense :
+                    expenseList) {
+                this.expenseList.add(expense);
+                this.total = this.total.add(expense.getTotal());
             }
-        } else {
-            this.total = 0;
         }
+        this.categoryName = categoryName;
         this.goal = goal;
+
     }
 
     /**
      * Adds an expense to the current list of expenses
      * @param expense expense to be added
      */
-    public void addExpense(Double expense) {
-        if (expenseList == null) {
-            expenseList = new ArrayList<>();
-        }
+    public void addExpense(BigDecimal expense) {
         expenseList.add(new Expense(expense));
-        total += expense;
+        total = total.add(expense);
     }
 
     @Override
@@ -80,21 +79,32 @@ public class Category implements Budgetable {
      * @return true when total is less than or equal to goal, else returns false
      */
     public boolean isInGoal() {
-        return total <= goal;
+        return (total.compareTo(goal) <= 0);
     }
 
     @Override
     /**
      * @return total of expenses in category
      */
-    public double getTotal() {
+    public BigDecimal getTotal() {
         return total;
+    }
+
+    /**
+     * @return total of expenses in category
+     */
+    public String getDollarTotal() {
+        return "$" + String.valueOf(total);
     }
 
     /**
      * @return goal of category
      */
-    public double getGoal() {
+    public BigDecimal getGoal() {
         return goal;
+    }
+
+    public List<Expense> getExpenseList() {
+        return expenseList;
     }
 }

@@ -16,19 +16,19 @@ public class ExpensesUnitTest {
 
     @Test
     public void There_isExpense() throws Exception{
-        Expense exp = new Expense(new BigDecimal(123.00));
+        Expense exp = new Expense(new BigDecimal(123.00), "Category");
         assertEquals(exp.getTotal().compareTo(new BigDecimal(123.00)), 0);
 
-        Expense exp1 = new Expense(new BigDecimal(55.33));
+        Expense exp1 = new Expense(new BigDecimal(55.33), "Category");
         assertEquals(exp1.getTotal().compareTo(new BigDecimal(55.33)), 0);
 
-        Expense exp2 = new Expense(new BigDecimal(23.21));
+        Expense exp2 = new Expense(new BigDecimal(23.21), "Category");
         assertEquals(exp2.getTotal().compareTo(new BigDecimal(23.21)), 0);
     }
 
     @Test
     public void There_isDate() throws Exception{
-        Expense exp = new Expense(new BigDecimal(100.0));
+        Expense exp = new Expense(new BigDecimal(100.0), "Category");
         Date d = new Date();
         String date = d.toString();
 

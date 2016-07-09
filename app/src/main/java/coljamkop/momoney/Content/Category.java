@@ -2,14 +2,16 @@ package coljamkop.momoney.Content;
 
 import android.support.annotation.Nullable;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Aghbac on 6/8/16.
  */
-public class Category implements Budgetable {
+public class Category implements Budgetable, Serializable {
     private List<Expense> expenseList;
     private String categoryName;
     private BigDecimal total;
@@ -70,7 +72,7 @@ public class Category implements Budgetable {
      * @param expense expense to be added
      */
     public void addExpense(BigDecimal expense) {
-        expenseList.add(new Expense(expense));
+        expenseList.add(new Expense(expense, categoryName));
         total = total.add(expense);
     }
 
@@ -94,7 +96,7 @@ public class Category implements Budgetable {
      * @return total of expenses in category
      */
     public String getDollarTotal() {
-        return "$" + String.valueOf(total);
+        return "$" + String.valueOf(total.setScale(2, RoundingMode.CEILING));
     }
 
     /**
@@ -106,5 +108,10 @@ public class Category implements Budgetable {
 
     public List<Expense> getExpenseList() {
         return expenseList;
+    }
+
+    public void deleteExpense(Expense expense) {
+        total = total.subtract(expense.getTotal());
+        expenseList.remove(expense);
     }
 }

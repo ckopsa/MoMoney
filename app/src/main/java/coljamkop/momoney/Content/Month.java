@@ -12,22 +12,21 @@ import java.util.Map;
  * Created by Aghbac on 6/8/16.
  */
 public class Month implements Budgetable {
-    Map<String, Category> categoryMap;
-    List<Category> categoryList;
-    int year;
-    int month;
-    BigDecimal total;
-    BigDecimal goal;
+    private Map<String, Category> categoryMap;
+    private List<Category> categoryList;
+    private int year;
+    private int month;
+    private BigDecimal total;
+    private BigDecimal goal;
 
     public Month(int year, int month, @Nullable List<Category> categoryList) {
         this.year = year;
         this.month = month;
         this.goal = new BigDecimal(0.0);
         this.total = new BigDecimal(0.0);
-        if (categoryList == null) {
-            this.categoryMap = null;
-            this.categoryList = null;
-        } else {
+        this.categoryMap = new HashMap<>();
+        this.categoryList = new ArrayList<>();
+        if (categoryList != null) {
             for (Category category :
                     categoryList) {
                 addCategory(new Category(null, category.getCategoryName(), category.getGoal()));
@@ -36,13 +35,8 @@ public class Month implements Budgetable {
     }
 
     public void addCategory(Category category) {
-        if (categoryMap == null && categoryList == null) {
-            categoryMap = new HashMap<>();
-            categoryList = new ArrayList<>();
-        }
-
-        categoryMap.put(category.getCategoryName(), category);
         categoryList.add(category);
+        categoryMap.put(category.getCategoryName(), category);
 
         this.goal.add(category.getGoal());
         this.total.add(category.getTotal());
@@ -64,5 +58,18 @@ public class Month implements Budgetable {
 
     public List<Category> getCategories() {
         return categoryList;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public void deleteCategory(Category category) {
+        categoryList.remove(category);
+        categoryMap.remove(category);
     }
 }

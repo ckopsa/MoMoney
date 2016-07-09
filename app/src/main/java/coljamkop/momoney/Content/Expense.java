@@ -1,5 +1,6 @@
 package coljamkop.momoney.Content;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -10,14 +11,16 @@ import java.util.Date;
 /**
  * Stores the expense data including: total, date of purchase
  */
-public class Expense {
+public class Expense implements Serializable {
 
     private BigDecimal total;
-    private String date;
+    private Date date;
+    private String category;
 
-    public Expense(BigDecimal expense) {
-        total = expense;
-        this.date = new Date().toString();
+    public Expense(BigDecimal expense, String categoryName) {
+        this.total = expense;
+        this.category = categoryName;
+        this.date = new Date();
     }
 
     /**
@@ -39,13 +42,17 @@ public class Expense {
      * @param date purchase date of the expense
      */
     public void setDate(Date date) {
-        this.date = date.toString();
+        this.date = date;
     }
 
     /**
      * @return returns purchase date of expense as string
      */
-    public String getDate() {
+    public Date getDate() {
         return date;
+    }
+
+    public String getCategoryName() {
+        return category;
     }
 }

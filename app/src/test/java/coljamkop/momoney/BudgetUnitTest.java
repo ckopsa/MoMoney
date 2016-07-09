@@ -4,11 +4,9 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 
-import coljamkop.momoney.Content.Budget;
+import coljamkop.momoney.Content.BudgetContent;
 import coljamkop.momoney.Content.Category;
 import coljamkop.momoney.Content.Month;
-
-import static org.junit.Assert.*;
 
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
@@ -16,8 +14,7 @@ import static org.junit.Assert.*;
 public class BudgetUnitTest {
     @Test
     public void monthRollOver_IsCorrect() throws Exception {
-        Budget budget = new Budget();
-        Month oldMonth = budget.getCurrentMonth();
+        Month oldMonth = BudgetContent.getThisMonth();
 
         // give month data
         oldMonth.addCategory(new Category(null, "Groceries", new BigDecimal(100.0)));
@@ -45,17 +42,16 @@ public class BudgetUnitTest {
         }
 
         // month rolls over
-        budget.monthRollover();
+        BudgetContent.monthRollover();
 
         // check categories for 0.00 total
         for (Category category :
-                budget.getCurrentMonth().getCategories()) {
+                BudgetContent.getThisMonth().getCategories()) {
             assert(category.getTotal().compareTo(new BigDecimal(0.00)) == 0);
         }
     }
 
     @Test
     public void yearRollOver_IsCorrect() throws Exception {
-        Budget budget = new Budget();
     }
 }

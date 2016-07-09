@@ -7,17 +7,14 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
 import coljamkop.momoney.CategoriesFragment.OnListFragmentInteractionListener;
-import coljamkop.momoney.Content.Budget;
 import coljamkop.momoney.Content.Category;
 import coljamkop.momoney.R;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link Budget} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link Category} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
@@ -41,12 +38,36 @@ public class MyCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<MyCate
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mCategory = mValues.get(position);
-        holder.mContentView.setText(mValues.get(position).getCategoryName());
-        holder.mCategoryAmount.setText(holder.mCategory.getDollarTotal());
+        holder.mCategoryNameView.setText(mValues.get(position).getCategoryName());
+        holder.mCategoryAmountView.setText(holder.mCategory.getDollarTotal());
         holder.mAddExpenseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mListener.onAddExpenseButtonInteraction(holder.mCategory);
+            }
+        });
+        holder.mListExpenseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onListExpenseButtonInteraction(holder.mCategory);
+            }
+        });
+        holder.mDeleteCategoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onDeleteCategoryButtonInteraction(holder.mCategory);
+            }
+        });
+        holder.mCategoryNameView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onCategoryNameInteraction(holder.mCategory);
+            }
+        });
+        holder.mCategoryAmountView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
     }
@@ -58,24 +79,26 @@ public class MyCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<MyCate
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mContentView;
-        public final TextView mCategoryAmount;
+        public final TextView mCategoryNameView;
+        public final TextView mCategoryAmountView;
         public final ImageButton mAddExpenseButton;
         public final ImageButton mListExpenseButton;
+        public final ImageButton mDeleteCategoryButton;
         public Category mCategory;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mContentView = (TextView) view.findViewById(R.id.category_name_text);
+            mCategoryNameView = (TextView) view.findViewById(R.id.category_name_text);
             mAddExpenseButton = (ImageButton) view.findViewById(R.id.add_expense_button);
             mListExpenseButton = (ImageButton) view.findViewById(R.id.list_expense_button);
-            mCategoryAmount = (TextView) view.findViewById(R.id.category_total_text);
+            mDeleteCategoryButton = (ImageButton) view.findViewById(R.id.delete_category_button);
+            mCategoryAmountView = (TextView) view.findViewById(R.id.category_total_text);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mCategoryNameView.getText() + "'";
         }
     }
 }

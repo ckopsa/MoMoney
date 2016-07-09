@@ -10,35 +10,39 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import coljamkop.momoney.Content.BudgetContent;
 import coljamkop.momoney.Content.Category;
-import coljamkop.momoney.RecylerViewAdapters.MyCategoriesRecyclerViewAdapter;
+import coljamkop.momoney.Content.Expense;
+import coljamkop.momoney.RecylerViewAdapters.MyExpenseRecyclerViewAdapter;
 
 /**
  * A fragment representing a list of Items.
+ * <p>
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class CategoriesFragment extends Fragment {
+public class ExpenseFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
+    private static final String ARG_EXPENSE = "expense";
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    private Category mCategory;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public CategoriesFragment() {
+    public ExpenseFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static CategoriesFragment newInstance(int columnCount) {
-        CategoriesFragment fragment = new CategoriesFragment();
+    public static ExpenseFragment newInstance(int columnCount, Category category) {
+        ExpenseFragment fragment = new ExpenseFragment();
         Bundle args = new Bundle();
+        args.putSerializable(ARG_EXPENSE, category);
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
         return fragment;
@@ -50,14 +54,14 @@ public class CategoriesFragment extends Fragment {
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            mCategory = (Category) getArguments().getSerializable(ARG_EXPENSE);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_categories_list, container, false);
-        RecyclerView expenseList = (RecyclerView) view.findViewById(R.id.expandable_expense_list);
+        View view = inflater.inflate(R.layout.fragment_expense_list, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -68,7 +72,7 @@ public class CategoriesFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyCategoriesRecyclerViewAdapter(BudgetContent.getThisMonth().getCategories(), mListener));
+            recyclerView.setAdapter(new MyExpenseRecyclerViewAdapter(mCategory.getExpenseList(), mListener));
         }
         return view;
     }
@@ -96,18 +100,16 @@ public class CategoriesFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
+     * <p>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(Category category);
-
-        void onAddExpenseButtonInteraction(Category category);
-        void onListExpenseButtonInteraction(Category category);
-        void onDeleteCategoryButtonInteraction(Category category);
-
-        void onCategoryNameInteraction(Category category);
+        void onListFragmentInteraction(Expense expense);
+        void onDeleteExpenseButtonInteraction(Expense expense);
+        void onExpenseAmountViewInteraction(Expense expense);
+        void onExpenseDateViewInteraction(Expense expense);
     }
 }

@@ -1,10 +1,9 @@
 package coljamkop.momoney.Content;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Calendar;
+import java.util.Deque;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,7 +17,7 @@ public class BudgetContent {
     /**
      * An array of sample (dummy) items.
      */
-    public static final List<Month> MONTH_LIST = new ArrayList<>();
+    public static final Deque<Month> MONTH_DEQUE = new ArrayDeque<>();
 
     /**
      * A map of sample (dummy) items, by ID.
@@ -30,21 +29,25 @@ public class BudgetContent {
     static {
         // Add some sample items.
         Calendar calendar = Calendar.getInstance();
-        for (int i = 1; i <= COUNT; i++) {
-            Month month = new Month(calendar.YEAR, calendar.MONTH + i, null);
-            for (int j = 1; j <= COUNT; j++) {
-                month.addCategory(new Category(null, "Category " + j, new BigDecimal(10)));
-            }
-            addItem(month);
-        }
+        Month month = new Month(calendar.YEAR, calendar.MONTH, null);
+        addMonth(month);
     }
 
-    private static void addItem(Month item) {
-        MONTH_LIST.add(item);
+    public static void addMonth(Month item) {
+        MONTH_DEQUE.push(item);
         MONTH_MAP.put(item.hashCode(), item);
     }
 
     public static Month getThisMonth() {
-        return MONTH_LIST.get(0);
+        return MONTH_DEQUE.peek();
+    }
+
+    public static void monthRollover() {
+        if (MONTH_DEQUE != null) {
+            Month oldMonth = MONTH_DEQUE.peek();
+            MONTH_DEQUE.push(new Month(oldMonth.getYear(),
+                    oldMonth.getMonth() + 1,
+                    oldMonth.getCategories()));
+        }
     }
 }

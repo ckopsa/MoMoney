@@ -1,8 +1,6 @@
 package coljamkop.momoney;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,12 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.DatePicker;
+import android.view.View;
 import android.widget.EditText;
-import android.widget.TimePicker;
+import android.widget.TextView;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -77,8 +74,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
         }
 //        final DBHelper db = new DBHelper(getApplicationContext());
 //        final FamilyContent.Appointment appointment = new FamilyContent.Appointment(0,0,0,0,0, Integer.parseInt(family.getID()));
-        final Calendar c = Calendar.getInstance();
-        c.setTime(expense.getDate());
+        final Calendar c = expense.getDate();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         final int day = c.get(Calendar.DAY_OF_MONTH);
@@ -128,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
 
     @Override
     public void onAddExpenseButtonInteraction(final Category category) {
-        final RecyclerView categoryRecycleView = (RecyclerView) findViewById(R.id.list);
+        final RecyclerView categoryRecycleView = (RecyclerView) findViewById(R.id.category_list);
         String title;
         final EditText input = new EditText(this);
         input.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
@@ -160,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
     public void onDeleteCategoryButtonInteraction(Category category) {
         BudgetContent.getThisMonth().deleteCategory(category);
         // TODO Remove from database
-        ((RecyclerView)findViewById(R.id.list)).getAdapter().notifyDataSetChanged();
+        ((RecyclerView)findViewById(R.id.category_list)).getAdapter().notifyDataSetChanged();
     }
 
     @Override
@@ -197,22 +193,44 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.set_monthly_goal) {
+//            String title;
+//            final EditText input = new EditText(this);
+//            input.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+//            title = "Set Monthly Goal:";
+//            new AlertDialog.Builder(this)
+//                    .setTitle(title)
+//                    .setView(input)
+//                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int whichButton) {
+//                            String text = input.getText().toString();
+//                            BudgetContent.getThisMonth().setGoal(BigDecimal.valueOf(Double.parseDouble(text)));
+//                            // TODO update database
+//                        }
+//                    })
+//                    .setNegativeButton(android.R.string.no, null)
+//                    .show();        }
         if (id == R.id.add_category) {
-            final RecyclerView categoryRecycleView = (RecyclerView) findViewById(R.id.list);
+            final RecyclerView categoryRecycleView = (RecyclerView) findViewById(R.id.category_list);
             String title;
-            final EditText input = new EditText(this);
-            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            final View view = View.inflate(this, R.layout.add_category_dialog, null);
             title = "Add a category:";
             new AlertDialog.Builder(this)
                     .setTitle(title)
-                    .setView(input)
+                    .setView(view)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-                            String text = input.getText().toString();
-                            BudgetContent.getThisMonth().addCategory(new Category(null, text, new BigDecimal(0)));
+                            EditText categoryName = (EditText) view.findViewById(R.id.add_category_category_name);
+                            EditText categoryGoal = (EditText) view.findViewById(R.id.add_category_category_goal);
+                            if (!categoryGoal.getText().toString().equals(""))
+                                BudgetContent.getThisMonth().addCategory(new Category(null,
+                                        categoryName.getText().toString(),
+                                        new BigDecimal(categoryGoal.getText().toString())));
+                            else
+                                BudgetContent.getThisMonth().addCategory(new Category(null,
+                                        categoryName.getText().toString(),
+                                        BigDecimal.ZERO));
+
                             // TODO update database
                             categoryRecycleView.getAdapter().notifyDataSetChanged();
                         }

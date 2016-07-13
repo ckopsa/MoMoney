@@ -2,7 +2,7 @@ package coljamkop.momoney.Content;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.Calendar;
 
 /**
  * Created by Aghbac on 6/8/16.
@@ -14,13 +14,13 @@ import java.util.Date;
 public class Expense implements Serializable {
 
     private BigDecimal total;
-    private Date date;
+    private Calendar date;
     private String category;
 
     public Expense(BigDecimal expense, String categoryName) {
         this.total = expense;
         this.category = categoryName;
-        this.date = new Date();
+        this.date = Calendar.getInstance();
     }
 
     /**
@@ -41,14 +41,14 @@ public class Expense implements Serializable {
     /**
      * @param date purchase date of the expense
      */
-    public void setDate(Date date) {
+    public void setDate(Calendar date) {
         this.date = date;
     }
 
     /**
      * @return returns purchase date of expense as string
      */
-    public Date getDate() {
+    public Calendar getDate() {
         return date;
     }
 

@@ -38,8 +38,8 @@ public class Month implements Budgetable {
         categoryList.add(category);
         categoryMap.put(category.getCategoryName(), category);
 
-        this.goal.add(category.getGoal());
-        this.total.add(category.getTotal());
+        this.goal = this.goal.add(category.getGoal());
+        this.total = this.total.add(category.getTotal());
     }
 
     @Override
@@ -71,5 +71,13 @@ public class Month implements Budgetable {
     public void deleteCategory(Category category) {
         categoryList.remove(category);
         categoryMap.remove(category);
+    }
+
+    public BigDecimal getGoal() {
+        return goal;
+    }
+
+    public void setGoal(BigDecimal goal) {
+        this.goal = goal;
     }
 }

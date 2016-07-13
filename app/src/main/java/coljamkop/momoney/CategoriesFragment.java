@@ -1,6 +1,7 @@
 package coljamkop.momoney;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -9,6 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 import coljamkop.momoney.Content.BudgetContent;
 import coljamkop.momoney.Content.Category;
@@ -57,12 +63,20 @@ public class CategoriesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_categories_list, container, false);
-        RecyclerView expenseList = (RecyclerView) view.findViewById(R.id.expandable_expense_list);
+//        TextView remainingBudget = (TextView) view.findViewById(R.id.remaining_budget);
+//        BigDecimal remainder = BudgetContent.getThisMonth().getGoal().subtract(BudgetContent.getThisMonth().getTotal());
+//        if (remainder.compareTo(BigDecimal.ZERO) == 0) {
+//            view.findViewById(R.id.monthly_goal_container).setVisibility(View.GONE);
+//        } else if (remainder.compareTo(BigDecimal.ZERO) > 0) {
+//                remainingBudget.setText("+ $" + remainder.setScale(2, RoundingMode.CEILING));
+//        } else {
+//            remainingBudget.setText("- $" + remainder.setScale(2, RoundingMode.CEILING));
+//        }
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
+        if (view.findViewById(R.id.category_list) instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.category_list);
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {

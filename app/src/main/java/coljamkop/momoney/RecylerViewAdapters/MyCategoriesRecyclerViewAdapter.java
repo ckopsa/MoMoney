@@ -1,5 +1,7 @@
 package coljamkop.momoney.RecylerViewAdapters;
 
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +41,9 @@ public class MyCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<MyCate
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mCategory = mValues.get(position);
         holder.mCategoryNameView.setText(mValues.get(position).getCategoryName());
-        holder.mCategoryAmountView.setText(holder.mCategory.getDollarTotal());
+        holder.mCategoryAmountView.setText(holder.mCategory.getDollarRemainder());
+        if (holder.mCategory.getTotal().compareTo(holder.mCategory.getGoal()) > 0)
+            holder.mCategoryAmountView.setTextColor(holder.mView.getResources().getColor(R.color.colorAccentComplement));
         holder.mAddExpenseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

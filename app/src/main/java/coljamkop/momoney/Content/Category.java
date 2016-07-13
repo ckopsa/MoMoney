@@ -100,6 +100,17 @@ public class Category implements Budgetable, Serializable {
     }
 
     /**
+     * @return remainder of budget in category
+     */
+    public String getDollarRemainder() {
+        BigDecimal remainder = goal.subtract(total);
+        if (remainder.compareTo(BigDecimal.ZERO) <= 0)
+            return "$" + String.valueOf(remainder.setScale(2, RoundingMode.CEILING));
+        else
+            return "$+" + String.valueOf(remainder.setScale(2, RoundingMode.CEILING));
+    }
+
+    /**
      * @return goal of category
      */
     public BigDecimal getGoal() {

@@ -12,6 +12,7 @@ import coljamkop.momoney.ExpenseFragment.OnListFragmentInteractionListener;
 import coljamkop.momoney.R;
 
 import java.math.RoundingMode;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -39,7 +40,12 @@ public class MyExpenseRecyclerViewAdapter extends RecyclerView.Adapter<MyExpense
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mExpense = mValues.get(position);
-        holder.mExpenseDateView.setText(mValues.get(position).getDate());
+        String date = mValues.get(position).getDate().get(Calendar.MONTH) + 1 + "/"
+                + holder.mExpense.getDate().get(Calendar.DAY_OF_MONTH)
+                + " " + holder.mExpense.getDate().get(Calendar.HOUR_OF_DAY)
+                + ":" + holder.mExpense.getDate().get(Calendar.MINUTE);
+        if (holder.mExpense.getDate().get(Calendar.AM_PM) == 0) date += " AM"; else date += " PM";
+        holder.mExpenseDateView.setText(date);
         holder.mExpenseAmountView.setText("$" + String.valueOf(holder.mExpense.getTotal().setScale(2, RoundingMode.CEILING)));
 
         holder.mView.setOnClickListener(new View.OnClickListener() {

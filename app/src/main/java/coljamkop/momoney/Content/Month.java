@@ -34,12 +34,18 @@ public class Month implements Budgetable {
         }
     }
 
-    public void addCategory(Category category) {
-        categoryList.add(category);
-        categoryMap.put(category.getCategoryName(), category);
+    public boolean addCategory(Category category) {
+        for (Category cat : categoryList){
+            if (cat.getCategoryName().equals(category.getCategoryName()))
+                return false;
+        }
+            categoryList.add(category);
+            categoryMap.put(category.getCategoryName(), category);
 
-        this.goal = this.goal.add(category.getGoal());
-        this.total = this.total.add(category.getTotal());
+            this.goal = this.goal.add(category.getGoal());
+            this.total = this.total.add(category.getTotal());
+
+        return true;
     }
 
     @Override

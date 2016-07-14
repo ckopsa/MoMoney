@@ -1,6 +1,7 @@
 package coljamkop.momoney;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,15 +17,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import coljamkop.momoney.Content.BudgetContent;
 import coljamkop.momoney.Content.Category;
+import coljamkop.momoney.Content.DBOperations;
 import coljamkop.momoney.Content.Expense;
 
 public class MainActivity extends AppCompatActivity implements CategoriesFragment.OnListFragmentInteractionListener,
         ExpenseFragment.OnListFragmentInteractionListener {
 
+
+    Context context = this;
+    DBOperations dbo = new DBOperations(context);
+    SimpleDateFormat format = new SimpleDateFormat("mm yyyy");
     /*
      * ExpenseView
      */
@@ -137,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
                     String text = input.getText().toString();
                     category.addExpense(BigDecimal.valueOf(Double.parseDouble(text.trim())));
                     // TODO update database
+                    dbo.setExpense(dbo, category.getCategoryName(), BigDecimal.valueOf(Double.parseDouble(text.trim())), format.format(new Date()));
                     categoryRecycleView.getAdapter().notifyDataSetChanged();
                 }
             })
@@ -222,16 +231,25 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
                         public void onClick(DialogInterface dialog, int whichButton) {
                             EditText categoryName = (EditText) view.findViewById(R.id.add_category_category_name);
                             EditText categoryGoal = (EditText) view.findViewById(R.id.add_category_category_goal);
+                            boolean added = true;
                             if (!categoryGoal.getText().toString().equals(""))
-                                BudgetContent.getThisMonth().addCategory(new Category(null,
+                                added = BudgetContent.getThisMonth().addCategory(new Category(null,
                                         categoryName.getText().toString(),
                                         new BigDecimal(categoryGoal.getText().toString())));
                             else
-                                BudgetContent.getThisMonth().addCategory(new Category(null,
+                                added = BudgetContent.getThisMonth().addCategory(new Category(null,
                                         categoryName.getText().toString(),
                                         BigDecimal.ZERO));
 
                             // TODO update database
+
+                            if (added == true){
+                                if (!categoryGoal.getText().toString().equals("")) {
+                                    dbo.putCategory(dbo, categoryName.getText().toString(), categoryGoal.getText().toString());
+                                }
+                                else
+                                    dbo.putCategory(dbo, categoryName.getText().toString(), "0");
+                            }
                             categoryRecycleView.getAdapter().notifyDataSetChanged();
                         }
                     })

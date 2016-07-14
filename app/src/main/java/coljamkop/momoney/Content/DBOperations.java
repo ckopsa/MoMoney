@@ -9,7 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.math.BigDecimal;
-import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Cesar de Leon
@@ -22,27 +23,33 @@ public class DBOperations extends SQLiteOpenHelper {
     public static final int database_version = 1;
 
     /**
-     * <p>Command that creates the Current Month table int the database</p>
+     * <p>Command that creates the Expense table int the database</p>
      */
-    public String CURRENT_QUERY = "CREATE TABLE "
-            + DBData.CurrentInfo.TABLE_NAME
+    public String EXPENSE_QUERY = "CREATE TABLE "
+            + DBData.Expense.TABLE_NAME
             + " ("
-            + DBData.CurrentInfo.CATEGORY + " TEXT, "
-            + DBData.CurrentInfo.TOTAL + " NUM, "
-            + DBData.CurrentInfo.DATE + " TEXT);";
+            + DBData.Expense.CATEGORY + " TEXT, "
+            + DBData.Expense.TOTAL + " NUM, "
+            + DBData.Expense.DATE + " TEXT);";
 
     /**
-     * <p>Command that creates the Months table in the database</p>
+     * <p>Command that creates the Month table in the database</p>
      */
     public String MONTH_QUERY = "CREATE TABLE "
-            + DBData.MonthInfo.TABLE_NAME
+            + DBData.Month.TABLE_NAME
             + " ("
-            + DBData.MonthInfo.YEAR + " NUM, "
-            + DBData.MonthInfo.MONTH + " TEXT, "
-            + DBData.MonthInfo.TOTAL + " NUM, "
-            + DBData.MonthInfo.GOAL + " NUM, "
-            + DBData.MonthInfo.METGOAL + " BOOLEAN);";
+            + DBData.Month.YEAR + " NUM, "
+            + DBData.Month.MONTH + " TEXT, "
+            + DBData.Month.GOAL + " NUM);";
 
+    /**
+     * <p>Command that creates the Category table in the database</p>
+     */
+    public String CATEGORY_QUERY = "CREATE TABLE "
+            + DBData.Category.TABLE_NAME
+            + " ("
+            + DBData.Category.CATEGORY_NAME + " TEXT, "
+            + DBData.Category.GOAL + " NUM);";
     /**
      * <p>DBOperations class is created and space for the database is allocated</p>
      * @param context context of the app
@@ -58,9 +65,10 @@ public class DBOperations extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CURRENT_QUERY);
+        db.execSQL(EXPENSE_QUERY);
         db.execSQL(MONTH_QUERY);
-        Log.i("Database operations", "Table created");
+        db.execSQL(CATEGORY_QUERY);
+        Log.i("Database operations", "Tables created");
     }
 
     @Override
@@ -75,27 +83,44 @@ public class DBOperations extends SQLiteOpenHelper {
      * @param total Total of the expense
      * @param date The date of the expense
      */
-    public void putInfoCurrent(DBOperations dop, String cat, BigDecimal total, String date){
+    public void setExpense(DBOperations dop, String cat, BigDecimal total, String date){
         SQLiteDatabase db = dop.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
-        cv.put(DBData.CurrentInfo.CATEGORY, cat);
-        cv.put(DBData.CurrentInfo.TOTAL, total.doubleValue());
-        cv.put(DBData.CurrentInfo.DATE, date);
-        db.insert(DBData.CurrentInfo.TABLE_NAME, null, cv);
+        cv.put(DBData.Expense.CATEGORY, cat);
+        cv.put(DBData.Expense.TOTAL, total.doubleValue());
+        cv.put(DBData.Expense.DATE, date);
+        db.insert(DBData.Expense.TABLE_NAME, null, cv);
         Log.i("Database operations", "Expense saved");
     }
 
     /**
-     * Returns a Cursor of all the columns
+     * Returns a list of Expenses based on the category and the date
      * @param dop DBOperations object
      * @return Cursor
      */
-    public Cursor getInfoCurrent(DBOperations dop){
+    public List<Expense> getExpense(DBOperations dop, String catName, String Date){
+
+        BigDecimal total;
+        String name;
+        String date;
+        List<Expense> expenseList = new ArrayList<Expense>();
         SQLiteDatabase db = dop.getReadableDatabase();
-        String[] columns = {DBData.CurrentInfo.CATEGORY, DBData.CurrentInfo.TOTAL, DBData.CurrentInfo.DATE};
-        Cursor cr = db.query(DBData.CurrentInfo.TABLE_NAME, columns, null, null, null, null, null);
-        return cr;
+        String[] columns = {DBData.Expense._ID, DBData.Expense.CATEGORY, DBData.Expense.TOTAL, DBData.Expense.DATE};
+        Cursor cr = db.query(DBData.Expense.TABLE_NAME, columns, null, null, null, null, null);
+
+        while (cr.moveToNext()){
+            total = new BigDecimal(cr.getString(2));
+            name = cr.getString(1);
+            date = cr.getString(3);
+
+            if (catName == name && date == Date) {
+                Expense dummyExpense = new Expense(total, name);
+                expenseList.add(dummyExpense);
+            }
+        }
+        cr.close();
+        return expenseList;
     }
 
     /**
@@ -103,33 +128,82 @@ public class DBOperations extends SQLiteOpenHelper {
      * @param dop DBOperations object
      * @param year Year of the month
      * @param month Month in that year
-     * @param total Total of expendures in that month
      * @param goal Goal for that Month
-     * @param metGoal If the goal was met or not
      */
-    public void putInfoMonth(DBOperations dop, String year, String month, BigDecimal total, String goal, Boolean metGoal){
+    public void putMonth(DBOperations dop, String year, String month, String goal){
         SQLiteDatabase db = dop.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
-        cv.put(DBData.MonthInfo.YEAR, year);
-        cv.put(DBData.MonthInfo.MONTH, month);
-        cv.put(DBData.MonthInfo.TOTAL, total.doubleValue());
-        cv.put(DBData.MonthInfo.GOAL, goal);
-        cv.put(DBData.MonthInfo.METGOAL, metGoal);
-        db.insert(DBData.CurrentInfo.TABLE_NAME, null, cv);
+        cv.put(DBData.Month.YEAR, year);
+        cv.put(DBData.Month.MONTH, month);
+        cv.put(DBData.Month.GOAL, goal);
+        db.insert(DBData.Month.TABLE_NAME, null, cv);
         Log.i("Database operations", "Expense saved");
     }
 
     /**
-     * <p>Returns a Cursor of all the columns in the Months table.</p>
+     * <p>Returns a Month Object</p>
      * @param dop DBOperations object
      * @return cr
      */
-    public Cursor getInfoMonth(DBOperations dop){
+    public Month getMonth(DBOperations dop, String year, String month){
+
+        Month dummyMonth = null;
+        int Year;
+        int Month;
+        BigDecimal goal;
         SQLiteDatabase db = dop.getReadableDatabase();
-        String[] columns = {DBData.MonthInfo.YEAR, DBData.MonthInfo.MONTH, DBData.MonthInfo.TOTAL, DBData.MonthInfo.GOAL, DBData.MonthInfo.METGOAL};
-        Cursor cr = db.query(DBData.CurrentInfo.TABLE_NAME, columns, null, null, null, null, null);
-        return cr;
+        String[] columns = {DBData.Month._ID, DBData.Month.YEAR, DBData.Month.MONTH, DBData.Month.GOAL};
+        Cursor cr = db.query(DBData.Month.TABLE_NAME, columns, null, null, null, null, null);
+
+        while (cr.moveToNext()){
+            if (cr.getString(1) == year && cr.getString(2) == month){
+                Year = Integer.parseInt(cr.getString(1));
+                Month = Integer.parseInt(cr.getString(2));
+                goal = new BigDecimal(cr.getString(3));
+                dummyMonth = new Month(Year, Month, null);
+                dummyMonth.setGoal(goal);
+            }
+        }
+        cr.close();
+        return dummyMonth;
+    }
+
+    /**
+     * <p>Adds a new category to the database</p>
+     * @param dop database operations object
+     * @param name name of the category
+     * @param goal goal for the category
+     */
+    public void putCategory(DBOperations dop, String name, String goal){
+        SQLiteDatabase db = dop.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(DBData.Category.CATEGORY_NAME, name);
+        cv.put(DBData.Category.GOAL, goal);
+        db.insert(DBData.Category.TABLE_NAME, null, cv);
+        Log.i("Database operations", "Expense saved");
+    }
+
+    /**
+     * <p>Returns a list of Categories and their goals.</p>
+     * @param dop database operation object to get a readable database.
+     * @return returns a cursor with all the table info.
+     */
+    public List<Category> getCategory(DBOperations dop){
+
+        List<Category> categoryList = new ArrayList<Category>();
+        SQLiteDatabase db = dop.getReadableDatabase();
+        String[] columns = {DBData.Category._ID, DBData.Category.CATEGORY_NAME, DBData.Category.GOAL};
+        Cursor cr = db.query(DBData.Category.TABLE_NAME, columns, null, null, null, null, null);
+
+        while (cr.moveToNext()){
+            BigDecimal goal = new BigDecimal(cr.getString(1));
+            Category dummyCat = new Category(null, cr.getString(0), goal);
+            categoryList.add(dummyCat);
+        }
+        cr.close();
+        return categoryList;
     }
 
     /**
@@ -149,4 +223,70 @@ public class DBOperations extends SQLiteOpenHelper {
         }
         return true;
     }
+
+    /**
+     * <p>This updates the goal of a month</p>
+     * @param dbo database operation object
+     * @param year the year
+     * @param month the month
+     * @param newgoal the new goal for that month
+     */
+    public void UpdateGoalMonth(DBOperations dbo, String year, String month, String newgoal){
+        SQLiteDatabase sq = dbo.getWritableDatabase();
+        String selection = DBData.Month.YEAR + " LIKE ? AND " + DBData.Month.MONTH + " LIKE ?";
+        String args[] = {year, month};
+        ContentValues values = new ContentValues();
+
+        values.put(DBData.Month.GOAL, newgoal);
+        sq.update(DBData.Month.TABLE_NAME, values, selection, args);
+    }
+
+    /**
+     * <p>This updates the goal of a category</p>
+     * @param dbo database operation object
+     * @param Category category name
+     * @param newgoal the new goal for that category
+     */
+    public void UpdateGoalCategory(DBOperations dbo, String Category, String newgoal){
+        SQLiteDatabase sq = dbo.getWritableDatabase();
+        String selection = DBData.Category.CATEGORY_NAME + " LIKE ?";
+        String args[] = {Category};
+        ContentValues values = new ContentValues();
+
+        values.put(DBData.Category.GOAL, newgoal);
+        sq.update(DBData.Category.TABLE_NAME, values, selection, args);
+    }
+
+    /**
+     * <p>This updates the category for an expense</p>
+     * @param dbo database operation object
+     * @param id the id of the expense we wanna change
+     * @param newCategory the new category for the expense.
+     */
+    public void UpdateExpenseCategory(DBOperations dbo, String id, String newCategory){
+        SQLiteDatabase sq = dbo.getWritableDatabase();
+        String selection = DBData.Expense._ID + " LIKE ?";
+        String args[] = {id};
+        ContentValues values = new ContentValues();
+
+        values.put(DBData.Expense.CATEGORY, newCategory);
+        sq.update(DBData.Expense.TABLE_NAME, values, selection, args);
+    }
+
+    /**
+     * <p>This updates the date for an expense</p>
+     * @param dbo database operations object
+     * @param id the id of the expense we want to update
+     * @param newDate the new date for the expense.
+     */
+    public void UpdateExpenseDate(DBOperations dbo, String id, String newDate){
+        SQLiteDatabase sq = dbo.getWritableDatabase();
+        String selection = DBData.Expense._ID + " LIKE ?";
+        String args[] = {id};
+        ContentValues values = new ContentValues();
+
+        values.put(DBData.Expense.DATE, newDate);
+        sq.update(DBData.Expense.TABLE_NAME, values, selection, args);
+    }
+
 }

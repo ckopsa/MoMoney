@@ -12,24 +12,29 @@ public class DBData {
 
     }
 
-    public static abstract class CurrentInfo implements BaseColumns{
+    public static abstract class Expense implements BaseColumns{
 
         public static final String CATEGORY = "category";
         public static final String TOTAL = "total";
         public static final String DATE = "date";
-        public static final String TABLE_NAME = "CurrentMonth";
+        public static final String TABLE_NAME = "Expense";
 
     }
 
-    public static abstract class MonthInfo implements BaseColumns{
+    public static abstract class Month implements BaseColumns{
 
-        public static final String YEAR = "category";
+        public static final String YEAR = "year";
         public static final String MONTH = "month";
-        public static final String TOTAL = "total";
         public static final String GOAL = "goal";
-        public static final String METGOAL = "met_goal";
-        public static final String TABLE_NAME = "Months";
+        public static final String TABLE_NAME = "Month";
 
 
+    }
+
+    public static abstract class Category implements BaseColumns{
+
+        public static final String CATEGORY_NAME = "category_name";
+        public static final String GOAL = "Goal";
+        public static final String TABLE_NAME = "Category";
     }
 }

@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
 
         if (dbo.checkDatabase(context)) {
             Log.i("onCreate", "reads database");
-            if (BudgetContent.MONTH_DEQUE.isEmpty()) {
+            if (BudgetContent.MONTH_DEQUE.isEmpty() || true) {
                 BudgetContent.addMonth(dbo.getCurrentMonth(dbo, String.valueOf(Calendar.YEAR), String.valueOf(Calendar.MONTH)));
             }
 

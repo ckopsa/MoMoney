@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,8 +33,8 @@ public class DBOperations extends SQLiteOpenHelper {
             + " ("
             + DBData.Expense.CATEGORY + " TEXT, "
             + DBData.Expense.TOTAL + " NUM, "
-            + DBData.Expense.DATE + " TEXT"
-            + DBData.Expense.MILLISECONDS + "NUM);";
+            + DBData.Expense.DATE + " TEXT, "
+            + DBData.Expense.MILLISECONDS + " NUM);";
 
     /**
      * <p>Command that creates the Month table in the database</p>
@@ -109,21 +110,22 @@ public class DBOperations extends SQLiteOpenHelper {
         long milliseconds = 0;
         List<Expense> expenseList = new ArrayList<Expense>();
         SQLiteDatabase db = dop.getReadableDatabase();
-        String[] columns = {DBData.Expense._ID, DBData.Expense.CATEGORY, DBData.Expense.TOTAL, DBData.Expense.DATE, DBData.Expense.MILLISECONDS};
+        String[] columns = {DBData.Expense.CATEGORY, DBData.Expense.TOTAL, DBData.Expense.DATE,};
         Cursor cr = db.query(DBData.Expense.TABLE_NAME, columns, null, null, null, null, null);
 
         while (cr.moveToNext()){
-            total = new BigDecimal(cr.getString(2));
-            name = cr.getString(1);
-            date = cr.getString(3);
+            total = new BigDecimal(cr.getString(1));
+            name = cr.getString(0);
+            date = cr.getString(2);
 
             if (catName == name && date == Date) {
-                milliseconds = Long.parseLong(cr.getString(4));
+                milliseconds = Long.parseLong(cr.getString(3));
                 Expense dummyExpense = new Expense(total, name, milliseconds);
                 expenseList.add(dummyExpense);
             }
         }
         cr.close();
+        db.close();
         return expenseList;
     }
 
@@ -209,7 +211,7 @@ public class DBOperations extends SQLiteOpenHelper {
 
         List<Category> categoryList = new ArrayList<Category>();
         SQLiteDatabase db = dop.getReadableDatabase();
-        String[] columns = {DBData.Category._ID, DBData.Category.CATEGORY_NAME, DBData.Category.GOAL};
+        String[] columns = {DBData.Category.CATEGORY_NAME, DBData.Category.GOAL};
         Cursor cr = db.query(DBData.Category.TABLE_NAME, columns, null, null, null, null, null);
 
         while (cr.moveToNext()){
@@ -218,6 +220,7 @@ public class DBOperations extends SQLiteOpenHelper {
             categoryList.add(dummyCat);
         }
         cr.close();
+        db.close();
         return categoryList;
     }
 
@@ -226,17 +229,34 @@ public class DBOperations extends SQLiteOpenHelper {
      * @param context conext of the app
      * @return boolean true for database is there, false if it isn't.
      */
+    /**
     public boolean checkDatabase(Context context){
 
-        SQLiteDatabase db;
+        SQLiteDatabase db = null;
         try{
             db = SQLiteDatabase.openDatabase(String.valueOf(context.getDatabasePath(DBData.DATABASE_NAME)), null, SQLiteDatabase.OPEN_READONLY);
+            db.close();
         }
         catch (SQLiteException e){
             Log.w("Database operations", "Database not found");
-            return false;
         }
-        return true;
+        return db != null;
+    }
+     */
+    public boolean checkDatabase(Context context) {
+        SQLiteDatabase checkDB = null;
+        try {
+            String myPath = String.valueOf(context.getDatabasePath(DBData.DATABASE_NAME));
+            File file = new File(myPath);
+            if (file.exists() && !file.isDirectory())
+                checkDB = SQLiteDatabase.openDatabase(myPath, null,
+                        SQLiteDatabase.OPEN_READONLY);
+        } catch (SQLiteException e) {
+        }
+        if (checkDB != null) {
+            checkDB.close();
+        }
+        return checkDB != null ? true : false;
     }
 
     /**

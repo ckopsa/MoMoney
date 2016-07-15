@@ -82,18 +82,16 @@ public class DBOperations extends SQLiteOpenHelper {
     /**
      * The Category of the expense, the total expense and the date are stored
      * @param dop DBOperations obj
-     * @param cat Name of the category
-     * @param total Total of the expense
-     * @param date The date of the expense
      */
-    public void setExpense(DBOperations dop, String cat, BigDecimal total, String date, int milliseconds){
+    public void setExpense(DBOperations dop, Expense expense){
         SQLiteDatabase db = dop.getWritableDatabase();
         ContentValues cv = new ContentValues();
-
-        cv.put(DBData.Expense.CATEGORY, cat);
-        cv.put(DBData.Expense.TOTAL, total.doubleValue());
+        SimpleDateFormat format = new SimpleDateFormat("mm yyyy");
+        String date = format.format(expense.getDate().getTime());
+        cv.put(DBData.Expense.CATEGORY, expense.getCategoryName());
+        cv.put(DBData.Expense.TOTAL, expense.getTotal().doubleValue());
         cv.put(DBData.Expense.DATE, date);
-        cv.put(DBData.Expense.MILLISECONDS, milliseconds);
+        cv.put(DBData.Expense.MILLISECONDS, expense.getDate().getTimeInMillis());
         db.insert(DBData.Expense.TABLE_NAME, null, cv);
         Log.i("Database operations", "Expense saved");
     }
@@ -266,27 +264,30 @@ public class DBOperations extends SQLiteOpenHelper {
     public void UpdateCategory(DBOperations dbo, String oldName, Category newcat){
         SQLiteDatabase sq = dbo.getWritableDatabase();
         String selection = DBData.Category.CATEGORY_NAME + " LIKE ?";
-        String args[] = {newcat.getCategoryName()};
+        String args[] = {oldName};
         ContentValues values = new ContentValues();
 
         values.put(DBData.Category.CATEGORY_NAME, newcat.getCategoryName());
         values.put(DBData.Category.GOAL, String.valueOf(newcat.getGoal()));
         sq.update(DBData.Category.TABLE_NAME, values, selection, args);
+
+        SimpleDateFormat format = new SimpleDateFormat("mm yyyy");
+        String date = format.format(new Date());
+
+        UpdateExpenseCategory(dbo, oldName, newcat, date);
     }
 
     /**
      * <p>This updates the category for an expense</p>
      * @param dbo database operation object
-     * @param id the id of the expense we wanna change
-     * @param newCategory the new category for the expense.
      */
-    public void UpdateExpenseCategory(DBOperations dbo, String id, String newCategory){
+    public void UpdateExpenseCategory(DBOperations dbo, String oldname, Category newcat, String date){
         SQLiteDatabase sq = dbo.getWritableDatabase();
-        String selection = DBData.Expense._ID + " LIKE ?";
-        String args[] = {id};
+        String selection = DBData.Expense.CATEGORY + " LIKE ? AND " + DBData.Expense.DATE + " LIKE ?";
+        String args[] = {oldname, date};
         ContentValues values = new ContentValues();
 
-        values.put(DBData.Expense.CATEGORY, newCategory);
+        values.put(DBData.Expense.CATEGORY, newcat.getCategoryName());
         sq.update(DBData.Expense.TABLE_NAME, values, selection, args);
     }
 

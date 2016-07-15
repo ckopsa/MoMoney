@@ -260,16 +260,17 @@ public class DBOperations extends SQLiteOpenHelper {
     /**
      * <p>This updates the goal of a category</p>
      * @param dbo database operation object
-     * @param Category category name
-     * @param newgoal the new goal for that category
+     * @param oldName old name of the category
+     * @param newcat category object with new info
      */
-    public void UpdateGoalCategory(DBOperations dbo, String Category, String newgoal){
+    public void UpdateCategory(DBOperations dbo, String oldName, Category newcat){
         SQLiteDatabase sq = dbo.getWritableDatabase();
         String selection = DBData.Category.CATEGORY_NAME + " LIKE ?";
-        String args[] = {Category};
+        String args[] = {newcat.getCategoryName()};
         ContentValues values = new ContentValues();
 
-        values.put(DBData.Category.GOAL, newgoal);
+        values.put(DBData.Category.CATEGORY_NAME, newcat.getCategoryName());
+        values.put(DBData.Category.GOAL, String.valueOf(newcat.getGoal()));
         sq.update(DBData.Category.TABLE_NAME, values, selection, args);
     }
 

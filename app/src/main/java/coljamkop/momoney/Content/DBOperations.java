@@ -150,11 +150,8 @@ public class DBOperations extends SQLiteOpenHelper {
      * @param dop DBOperations object
      * @return cr
      */
-    public Month getMonth(DBOperations dop, String year, String month){
-
-        Month dummyMonth = null;
-        int Year;
-        int Month;
+    public Month getCurrentMonth(DBOperations dop, String year, String month){
+        /**
         BigDecimal goal;
         SQLiteDatabase db = dop.getReadableDatabase();
         String[] columns = {DBData.Month._ID, DBData.Month.YEAR, DBData.Month.MONTH, DBData.Month.GOAL};
@@ -162,23 +159,27 @@ public class DBOperations extends SQLiteOpenHelper {
 
         while (cr.moveToNext()){
             if (cr.getString(1) == year && cr.getString(2) == month){
-                Year = Integer.parseInt(cr.getString(1));
-                Month = Integer.parseInt(cr.getString(2));
-                goal = new BigDecimal(cr.getString(3));
-                dummyMonth = new Month(Year, Month, null);
-                dummyMonth.setGoal(goal);
+                //Year = Integer.parseInt(cr.getString(1));
+                //Month = Integer.parseInt(cr.getString(2));
+                //goal = new BigDecimal(cr.getString(3));
+                //dummyMonth = new Month(Year, Month, null);
+                //dummyMonth.setGoal(goal);
             }
         }
         cr.close();
+         */
 
         String currentDate = month + " " + year;
         List<Category> catList = dop.getCategory(dop);
         List<Expense> expenseList;
 
+        Month dummyMonth = new Month(Integer.parseInt(year), Integer.parseInt(month), null);
+
         for (Category dummyCat : catList){
             expenseList = dop.getExpense(dop, dummyCat.getCategoryName(), currentDate);
             Category newCategory = new Category(expenseList, dummyCat.getCategoryName(), dummyCat.getGoal());
             dummyMonth.addCategory(newCategory);
+            Log.i("getCurrentMonth", "month loaded");
         }
 
         return dummyMonth;

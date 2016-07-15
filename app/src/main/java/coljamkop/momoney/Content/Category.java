@@ -125,4 +125,8 @@ public class Category implements Budgetable, Serializable {
         total = total.subtract(expense.getTotal());
         expenseList.remove(expense);
     }
+
+    public void addExpense(Expense expense) {
+        this.expenseList.add(expense);
+    }
 }

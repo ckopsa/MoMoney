@@ -10,16 +10,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import coljamkop.momoney.Content.BudgetContent;
 import coljamkop.momoney.Content.Category;
@@ -31,8 +31,9 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
 
 
     Context context = this;
-    DBOperations dbo = new DBOperations(context);
     SimpleDateFormat format = new SimpleDateFormat("mm yyyy");
+    DBOperations dbo = new DBOperations(context);
+
     /*
      * ExpenseView
      */
@@ -143,9 +144,10 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     String text = input.getText().toString();
-                    category.addExpense(BigDecimal.valueOf(Double.parseDouble(text.trim())));
+                    Expense expense = new Expense(BigDecimal.valueOf(Double.parseDouble(text.trim())), category.getCategoryName());
+                    category.addExpense(expense);
                     // TODO update database
-                    dbo.setExpense(dbo, category.getCategoryName(), BigDecimal.valueOf(Double.parseDouble(text.trim())), format.format(new Date()));
+//                    dbo.setExpense(dbo, expense);
                     categoryRecycleView.getAdapter().notifyDataSetChanged();
                 }
             })
@@ -169,21 +171,63 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
     }
 
     @Override
-    public void onCategoryNameInteraction(Category category) {
+    public void onCategoryNameInteraction(final Category category) {
+        final RecyclerView categoryRecycleView = (RecyclerView) findViewById(R.id.category_list);
+        String title;
+        final View view = View.inflate(this, R.layout.add_category_dialog, null);
+        final EditText categoryName = (EditText) view.findViewById(R.id.add_category_category_name);
+        final EditText categoryGoal = (EditText) view.findViewById(R.id.add_category_category_goal);
+        String oldName = category.getCategoryName();
+        categoryName.setText(category.getCategoryName());
+        categoryGoal.setText(category.getGoal().setScale(2, RoundingMode.CEILING).toString());
+        title = "Edit this category:";
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setView(view)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        boolean added = BudgetContent.getThisMonth().categoryExists(categoryName.getText().toString());
+                        if (!added) {
+                            if (!categoryGoal.getText().toString().equals(""))
+                                category.setCategoryName(categoryName.getText().toString());
+                                category.setGoal(new BigDecimal(categoryGoal.getText().toString()));
+                            } else {
+                                category.setCategoryName(categoryName.getText().toString());
+                                category.setGoal(BigDecimal.ZERO);
+                            }
 
+                        if (added) {
+                        // TODO Update database    dbo.updateCategory(dbo, oldName, category);
+                        }
+                        categoryRecycleView.getAdapter().notifyDataSetChanged();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null)
+                .show();
     }
 
+    /*
+     * GeneralView
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //DBOperations dbo = new DBOperations(context);
 
-        if (getSupportFragmentManager().getFragments() == null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(R.id.content_container, CategoriesFragment.newInstance(1));
-            ft.commit();
+        if (dbo.checkDatabase(context)) {
+            Log.i("onCreate", "reads database");
+            if (BudgetContent.MONTH_DEQUE.isEmpty()) {
+                BudgetContent.addMonth(dbo.getCurrentMonth(dbo, String.valueOf(Calendar.YEAR), String.valueOf(Calendar.MONTH)));
+            }
+
+            if (getSupportFragmentManager().getFragments() == null) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(R.id.content_container, CategoriesFragment.newInstance(1));
+                ft.commit();
+            }
         }
     }
 
@@ -232,23 +276,24 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
                             EditText categoryName = (EditText) view.findViewById(R.id.add_category_category_name);
                             EditText categoryGoal = (EditText) view.findViewById(R.id.add_category_category_goal);
                             boolean added = true;
-                            if (!categoryGoal.getText().toString().equals(""))
-                                added = BudgetContent.getThisMonth().addCategory(new Category(null,
+                            Category newCategory = null;
+                            if (!categoryGoal.getText().toString().equals("")) {
+                                newCategory = new Category(null,
                                         categoryName.getText().toString(),
-                                        new BigDecimal(categoryGoal.getText().toString())));
-                            else
-                                added = BudgetContent.getThisMonth().addCategory(new Category(null,
+                                        new BigDecimal(categoryGoal.getText().toString()));
+                                added = BudgetContent.getThisMonth().addCategory(newCategory);
+                            }
+                            else {
+                                newCategory = new Category(null,
                                         categoryName.getText().toString(),
-                                        BigDecimal.ZERO));
+                                        BigDecimal.ZERO);
+                                added = BudgetContent.getThisMonth().addCategory(newCategory);
+                            }
 
                             // TODO update database
-
+                            //DBOperations dbo = new DBOperations(context);
                             if (added == true){
-                                if (!categoryGoal.getText().toString().equals("")) {
-                                    dbo.putCategory(dbo, categoryName.getText().toString(), categoryGoal.getText().toString());
-                                }
-                                else
-                                    dbo.putCategory(dbo, categoryName.getText().toString(), "0");
+                                dbo.putCategory(dbo, newCategory);
                             }
                             categoryRecycleView.getAdapter().notifyDataSetChanged();
                         }

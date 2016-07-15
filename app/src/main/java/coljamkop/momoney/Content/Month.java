@@ -35,16 +35,15 @@ public class Month implements Budgetable {
     }
 
     public boolean addCategory(Category category) {
-        for (Category cat : categoryList){
-            if (cat.getCategoryName().equals(category.getCategoryName()))
+        for(Category iCategory : categoryList) {
+            if (iCategory.getCategoryName().equals(category.getCategoryName()))
                 return false;
         }
-            categoryList.add(category);
-            categoryMap.put(category.getCategoryName(), category);
+        categoryList.add(category);
+        categoryMap.put(category.getCategoryName(), category);
 
-            this.goal = this.goal.add(category.getGoal());
-            this.total = this.total.add(category.getTotal());
-
+        this.goal = this.goal.add(category.getGoal());
+        this.total = this.total.add(category.getTotal());
         return true;
     }
 
@@ -85,5 +84,13 @@ public class Month implements Budgetable {
 
     public void setGoal(BigDecimal goal) {
         this.goal = goal;
+    }
+
+    public boolean categoryExists(String categoryName) {
+        for(Category iCategory : categoryList) {
+            if (iCategory.getCategoryName().equals(categoryName))
+                return false;
+        }
+        return true;
     }
 }

@@ -9,7 +9,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,7 +32,8 @@ public class DBOperations extends SQLiteOpenHelper {
             + " ("
             + DBData.Expense.CATEGORY + " TEXT, "
             + DBData.Expense.TOTAL + " NUM, "
-            + DBData.Expense.DATE + " TEXT);";
+            + DBData.Expense.DATE + " TEXT"
+            + DBData.Expense.MILLISECONDS + "NUM);";
 
     /**
      * <p>Command that creates the Month table in the database</p>
@@ -83,13 +86,14 @@ public class DBOperations extends SQLiteOpenHelper {
      * @param total Total of the expense
      * @param date The date of the expense
      */
-    public void setExpense(DBOperations dop, String cat, BigDecimal total, String date){
+    public void setExpense(DBOperations dop, String cat, BigDecimal total, String date, int milliseconds){
         SQLiteDatabase db = dop.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
         cv.put(DBData.Expense.CATEGORY, cat);
         cv.put(DBData.Expense.TOTAL, total.doubleValue());
         cv.put(DBData.Expense.DATE, date);
+        cv.put(DBData.Expense.MILLISECONDS, milliseconds);
         db.insert(DBData.Expense.TABLE_NAME, null, cv);
         Log.i("Database operations", "Expense saved");
     }
@@ -104,9 +108,10 @@ public class DBOperations extends SQLiteOpenHelper {
         BigDecimal total;
         String name;
         String date;
+        long milliseconds = 0;
         List<Expense> expenseList = new ArrayList<Expense>();
         SQLiteDatabase db = dop.getReadableDatabase();
-        String[] columns = {DBData.Expense._ID, DBData.Expense.CATEGORY, DBData.Expense.TOTAL, DBData.Expense.DATE};
+        String[] columns = {DBData.Expense._ID, DBData.Expense.CATEGORY, DBData.Expense.TOTAL, DBData.Expense.DATE, DBData.Expense.MILLISECONDS};
         Cursor cr = db.query(DBData.Expense.TABLE_NAME, columns, null, null, null, null, null);
 
         while (cr.moveToNext()){
@@ -115,7 +120,8 @@ public class DBOperations extends SQLiteOpenHelper {
             date = cr.getString(3);
 
             if (catName == name && date == Date) {
-                Expense dummyExpense = new Expense(total, name);
+                milliseconds = Long.parseLong(cr.getString(4));
+                Expense dummyExpense = new Expense(total, name, milliseconds);
                 expenseList.add(dummyExpense);
             }
         }
@@ -166,21 +172,31 @@ public class DBOperations extends SQLiteOpenHelper {
             }
         }
         cr.close();
+
+        String currentDate = month + " " + year;
+        List<Category> catList = dop.getCategory(dop);
+        List<Expense> expenseList;
+
+        for (Category dummyCat : catList){
+            expenseList = dop.getExpense(dop, dummyCat.getCategoryName(), currentDate);
+            Category newCategory = new Category(expenseList, dummyCat.getCategoryName(), dummyCat.getGoal());
+            dummyMonth.addCategory(newCategory);
+        }
+
         return dummyMonth;
     }
 
     /**
      * <p>Adds a new category to the database</p>
      * @param dop database operations object
-     * @param name name of the category
-     * @param goal goal for the category
+     * @param cate category object that you want to save
      */
-    public void putCategory(DBOperations dop, String name, String goal){
+    public void putCategory(DBOperations dop, Category cate){
         SQLiteDatabase db = dop.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
-        cv.put(DBData.Category.CATEGORY_NAME, name);
-        cv.put(DBData.Category.GOAL, goal);
+        cv.put(DBData.Category.CATEGORY_NAME, cate.getCategoryName());
+        cv.put(DBData.Category.GOAL, String.valueOf(cate.getGoal()));
         db.insert(DBData.Category.TABLE_NAME, null, cv);
         Log.i("Database operations", "Expense saved");
     }

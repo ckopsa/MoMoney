@@ -17,6 +17,7 @@ public class DBData {
         public static final String CATEGORY = "category";
         public static final String TOTAL = "total";
         public static final String DATE = "date";
+        public static final String MILLISECONDS = "milliseconds";
         public static final String TABLE_NAME = "Expense";
 
     }

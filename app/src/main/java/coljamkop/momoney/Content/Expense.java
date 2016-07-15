@@ -23,6 +23,15 @@ public class Expense implements Serializable {
         this.date = Calendar.getInstance();
     }
 
+    public Expense(BigDecimal expense, String categoryName, long milliseconds){
+        this.total = expense;
+        this.category = categoryName;
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliseconds);
+        this.date = calendar;
+    }
+
     /**
      * @return total amount of expense
      */

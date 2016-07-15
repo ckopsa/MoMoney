@@ -89,7 +89,10 @@ public class Category implements Budgetable, Serializable {
      * @return total of expenses in category
      */
     public BigDecimal getTotal() {
-        return total;
+        BigDecimal temp = BigDecimal.ZERO;
+        for (Expense expense : expenseList)
+            temp = temp.add(expense.getTotal());
+        return temp;
     }
 
     /**
@@ -128,5 +131,6 @@ public class Category implements Budgetable, Serializable {
 
     public void addExpense(Expense expense) {
         this.expenseList.add(expense);
+        this.total = this.total.add(expense.getTotal());
     }
 }

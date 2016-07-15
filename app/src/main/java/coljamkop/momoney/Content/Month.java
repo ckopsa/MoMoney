@@ -54,7 +54,10 @@ public class Month implements Budgetable {
 
     @Override
     public BigDecimal getTotal() {
-        return total;
+        BigDecimal temp = BigDecimal.ZERO;
+        for (Category category : categoryList)
+            temp = temp.add(category.getTotal());
+        return temp;
     }
 
     public Category getCategory(String categoryName) {

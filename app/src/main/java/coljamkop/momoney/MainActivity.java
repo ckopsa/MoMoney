@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
         final RecyclerView expenseRecyclerView = (RecyclerView) findViewById(R.id.expense_list);
         String title;
         final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+        input.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
             input.setText(expense.getTotal().toString());
             title = "Edit expense amount:";
             new AlertDialog.Builder(this)
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
                         public void onClick(DialogInterface dialog, int whichButton) {
                             String text = input.getText().toString();
                             expense.setTotal(new BigDecimal(text.trim()));
-                            // TODO Update databse
+                            // TODO Update database
                             expenseRecyclerView.getAdapter().notifyDataSetChanged();
                         }
                     })
@@ -149,18 +151,30 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
                     // TODO update database
 //                    dbo.setExpense(dbo, expense);
                     categoryRecycleView.getAdapter().notifyDataSetChanged();
+                    updateToolbarTotal(category.getTotal());
                 }
             })
             .setNegativeButton(android.R.string.no, null)
             .show();
     }
 
+    private void updateToolbarTotal(BigDecimal total) {
+        ActionBar toolbar = getSupportActionBar();
+        assert toolbar != null;
+        toolbar.setTitle("Month Total: $" + BudgetContent.getThisMonth().getTotal().setScale(2, RoundingMode.CEILING));
+    }
+
     @Override
     public void onListExpenseButtonInteraction(Category category) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.content_container, ExpenseFragment.newInstance(1, category));
-        ft.addToBackStack(null);
-        ft.commit();
+        if (category.getTotal().compareTo(BigDecimal.ZERO) != 0) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.content_container, ExpenseFragment.newInstance(1, category));
+            ft.addToBackStack(null);
+            ft.commit();
+        }
+        else {
+            Toast.makeText(this, "No Expenses to Show", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -213,8 +227,6 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         //DBOperations dbo = new DBOperations(context);
 
         if (dbo.checkDatabase(context)) {
@@ -229,6 +241,9 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
                 ft.commit();
             }
         }
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        updateToolbarTotal(BudgetContent.getThisMonth().getTotal());
     }
 
     @Override
@@ -289,13 +304,13 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
                                         BigDecimal.ZERO);
                                 added = BudgetContent.getThisMonth().addCategory(newCategory);
                             }
+                            categoryRecycleView.getAdapter().notifyDataSetChanged();
 
                             // TODO update database
                             //DBOperations dbo = new DBOperations(context);
                             if (added == true){
                                 dbo.putCategory(dbo, newCategory);
                             }
-                            categoryRecycleView.getAdapter().notifyDataSetChanged();
                         }
                     })
                     .setNegativeButton(android.R.string.no, null)

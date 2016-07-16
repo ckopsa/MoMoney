@@ -14,14 +14,33 @@ import java.util.Map;
 public class Month implements Budgetable {
     private Map<String, Category> categoryMap;
     private List<Category> categoryList;
-    private int year;
-    private int month;
+    private String year;
+    private String month;
+    private String month_year;
     private BigDecimal total;
     private BigDecimal goal;
 
-    public Month(int year, int month, @Nullable List<Category> categoryList) {
+    public Month(String year, String month, @Nullable List<Category> categoryList) {
         this.year = year;
         this.month = month;
+        this.month_year = month + " " + year;
+        this.goal = new BigDecimal(0.0);
+        this.total = new BigDecimal(0.0);
+        this.categoryMap = new HashMap<>();
+        this.categoryList = new ArrayList<>();
+        if (categoryList != null) {
+            for (Category category :
+                    categoryList) {
+                addCategory(new Category(null, category.getCategoryName(), category.getGoal()));
+            }
+        }
+    }
+
+    public Month(String Month_Year, List<Category> categoryList){
+        this.month_year = Month_Year;
+        String[] monthYear = month_year.split(" ");
+        this.month = monthYear[0];
+        this.year = monthYear[1];
         this.goal = new BigDecimal(0.0);
         this.total = new BigDecimal(0.0);
         this.categoryMap = new HashMap<>();
@@ -68,11 +87,11 @@ public class Month implements Budgetable {
         return categoryList;
     }
 
-    public int getYear() {
+    public String getYear() {
         return year;
     }
 
-    public int getMonth() {
+    public String getMonth() {
         return month;
     }
 

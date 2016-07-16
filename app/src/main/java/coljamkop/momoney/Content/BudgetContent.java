@@ -1,5 +1,6 @@
 package coljamkop.momoney.Content;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.Calendar;
 import java.util.Deque;
@@ -28,8 +29,9 @@ public class BudgetContent {
 
     static {
         // Add some sample items.
+        SimpleDateFormat format = new SimpleDateFormat("MM yyyy");
         Calendar calendar = Calendar.getInstance();
-        Month month = new Month(calendar.YEAR, calendar.MONTH, null);
+        Month month = new Month(format.format(calendar.getTime()), null);
         addMonth(month);
     }
 

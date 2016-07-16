@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
 
 
     Context context = this;
-    SimpleDateFormat format = new SimpleDateFormat("mm yyyy");
+    SimpleDateFormat format = new SimpleDateFormat("MM yyyy");
     DBOperations dbo = new DBOperations(context);
 
     /*
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
     public void onDeleteExpenseButtonInteraction(Expense expense) {
         BudgetContent.getThisMonth().getCategory(expense.getCategoryName()).deleteExpense(expense);
         ((RecyclerView)findViewById(R.id.expense_list)).getAdapter().notifyDataSetChanged();
+        dbo.deleteExpense(dbo, expense);
 
     }
 
@@ -149,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
                     Expense expense = new Expense(BigDecimal.valueOf(Double.parseDouble(text.trim())), category.getCategoryName());
                     category.addExpense(expense);
                     // TODO update database
-//                    dbo.setExpense(dbo, expense);
+                    dbo.setExpense(dbo, expense);
                     categoryRecycleView.getAdapter().notifyDataSetChanged();
                     updateToolbarTotal(category.getTotal());
                 }
@@ -181,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
     public void onDeleteCategoryButtonInteraction(Category category) {
         BudgetContent.getThisMonth().deleteCategory(category);
         // TODO Remove from database
+        dbo.deleteCategory(dbo, category);
         ((RecyclerView)findViewById(R.id.category_list)).getAdapter().notifyDataSetChanged();
     }
 
@@ -191,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
         final View view = View.inflate(this, R.layout.add_category_dialog, null);
         final EditText categoryName = (EditText) view.findViewById(R.id.add_category_category_name);
         final EditText categoryGoal = (EditText) view.findViewById(R.id.add_category_category_goal);
-        String oldName = category.getCategoryName();
+        final String oldName = category.getCategoryName();
         categoryName.setText(category.getCategoryName());
         categoryGoal.setText(category.getGoal().setScale(2, RoundingMode.CEILING).toString());
         title = "Edit this category:";
@@ -205,13 +208,15 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
                             if (!categoryGoal.getText().toString().equals(""))
                                 category.setCategoryName(categoryName.getText().toString());
                                 category.setGoal(new BigDecimal(categoryGoal.getText().toString()));
+                                dbo.UpdateCategory(dbo, oldName, category);
                             } else {
                                 category.setCategoryName(categoryName.getText().toString());
                                 category.setGoal(BigDecimal.ZERO);
+                                dbo.UpdateCategory(dbo, oldName, category);
                             }
 
                         if (added) {
-                        // TODO Update database    dbo.updateCategory(dbo, oldName, category);
+                            dbo.UpdateCategory(dbo, oldName, category);
                         }
                         categoryRecycleView.getAdapter().notifyDataSetChanged();
                     }
@@ -232,15 +237,16 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
         if (dbo.checkDatabase(context)) {
             Log.i("onCreate", "reads database");
             if (BudgetContent.MONTH_DEQUE.isEmpty() || true) {
-                BudgetContent.addMonth(dbo.getCurrentMonth(dbo, String.valueOf(Calendar.YEAR), String.valueOf(Calendar.MONTH)));
+                Log.i("add_deque", "deque is empty");
+                BudgetContent.addMonth(dbo.getCurrentMonth(dbo, format.format(Calendar.getInstance().getTime())));
             }
+        }
 
             if (getSupportFragmentManager().getFragments() == null) {
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.add(R.id.content_container, CategoriesFragment.newInstance(1));
                 ft.commit();
             }
-        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         updateToolbarTotal(BudgetContent.getThisMonth().getTotal());
@@ -259,6 +265,8 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         //noinspection SimplifiableIfStatement
 //        if (id == R.id.set_monthly_goal) {
@@ -280,6 +288,10 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
 //                    .show();        }
         if (id == R.id.add_category) {
             final RecyclerView categoryRecycleView = (RecyclerView) findViewById(R.id.category_list);
+            //categoryRecycleView.setLayoutManager(layoutManager);
+
+            if (categoryRecycleView == null)
+                Log.i("recyclerView", "the view is null");
             String title;
             final View view = View.inflate(this, R.layout.add_category_dialog, null);
             title = "Add a category:";
@@ -311,6 +323,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesFragmen
                             if (added == true){
                                 dbo.putCategory(dbo, newCategory);
                             }
+                            Log.i("category", "category added");
                         }
                     })
                     .setNegativeButton(android.R.string.no, null)

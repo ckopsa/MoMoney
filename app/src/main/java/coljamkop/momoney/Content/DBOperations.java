@@ -87,7 +87,7 @@ public class DBOperations extends SQLiteOpenHelper {
     public void setExpense(DBOperations dop, Expense expense){
         SQLiteDatabase db = dop.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        SimpleDateFormat format = new SimpleDateFormat("mm yyyy");
+        SimpleDateFormat format = new SimpleDateFormat("MM yyyy");
         String date = format.format(expense.getDate().getTime());
         cv.put(DBData.Expense.CATEGORY, expense.getCategoryName());
         cv.put(DBData.Expense.TOTAL, expense.getTotal().doubleValue());
@@ -110,7 +110,7 @@ public class DBOperations extends SQLiteOpenHelper {
         long milliseconds = 0;
         List<Expense> expenseList = new ArrayList<Expense>();
         SQLiteDatabase db = dop.getReadableDatabase();
-        String[] columns = {DBData.Expense.CATEGORY, DBData.Expense.TOTAL, DBData.Expense.DATE,};
+        String[] columns = {DBData.Expense.CATEGORY, DBData.Expense.TOTAL, DBData.Expense.DATE, DBData.Expense.MILLISECONDS};
         Cursor cr = db.query(DBData.Expense.TABLE_NAME, columns, null, null, null, null, null);
 
         while (cr.moveToNext()){
@@ -118,15 +118,30 @@ public class DBOperations extends SQLiteOpenHelper {
             name = cr.getString(0);
             date = cr.getString(2);
 
-            if (catName == name && date == Date) {
+            if (catName.equals(name) && date.equals(Date)) {
                 milliseconds = Long.parseLong(cr.getString(3));
                 Expense dummyExpense = new Expense(total, name, milliseconds);
                 expenseList.add(dummyExpense);
             }
         }
+        Log.i("getExpenses", "gotExpenses");
         cr.close();
         db.close();
         return expenseList;
+    }
+
+    public void deleteExpense(DBOperations dbo, Expense expense){
+        String selection = DBData.Expense.CATEGORY + " LIKE ? AND "
+                + DBData.Expense.TOTAL + " LIKE ? AND "
+                + DBData.Expense.DATE + " LIKE ? AND "
+                + DBData.Expense.MILLISECONDS + " LIKE ?";
+
+        SimpleDateFormat format = new SimpleDateFormat("MM yyyy");
+        String args[] = {expense.getCategoryName(), String.valueOf(expense.getTotal()), format.format(expense.getDate().getTime()), String.valueOf(expense.getDate().getTimeInMillis())};
+
+        SQLiteDatabase db = dbo.getWritableDatabase();
+        db.delete(DBData.Expense.TABLE_NAME, selection, args);
+        db.close();
     }
 
     /**
@@ -152,7 +167,7 @@ public class DBOperations extends SQLiteOpenHelper {
      * @param dop DBOperations object
      * @return cr
      */
-    public Month getCurrentMonth(DBOperations dop, String year, String month){
+    public Month getCurrentMonth(DBOperations dop, String currDate){
         /**
         BigDecimal goal;
         SQLiteDatabase db = dop.getReadableDatabase();
@@ -171,18 +186,17 @@ public class DBOperations extends SQLiteOpenHelper {
         cr.close();
          */
 
-        String currentDate = month + " " + year;
         List<Category> catList = dop.getCategory(dop);
         List<Expense> expenseList;
 
-        Month dummyMonth = new Month(Integer.parseInt(year), Integer.parseInt(month), null);
+        Month dummyMonth = new Month(currDate, null);
 
         for (Category dummyCat : catList){
-            expenseList = dop.getExpense(dop, dummyCat.getCategoryName(), currentDate);
+            expenseList = dop.getExpense(dop, dummyCat.getCategoryName(), currDate);
             Category newCategory = new Category(expenseList, dummyCat.getCategoryName(), dummyCat.getGoal());
             dummyMonth.addCategory(newCategory);
-            Log.i("getCurrentMonth", "month loaded");
         }
+        Log.i("getCurrentMonth", "month loaded");
 
         return dummyMonth;
     }
@@ -199,7 +213,7 @@ public class DBOperations extends SQLiteOpenHelper {
         cv.put(DBData.Category.CATEGORY_NAME, cate.getCategoryName());
         cv.put(DBData.Category.GOAL, String.valueOf(cate.getGoal()));
         db.insert(DBData.Category.TABLE_NAME, null, cv);
-        Log.i("Database operations", "Expense saved");
+        Log.i("Database operations", "Category added");
     }
 
     /**
@@ -220,8 +234,19 @@ public class DBOperations extends SQLiteOpenHelper {
             categoryList.add(dummyCat);
         }
         cr.close();
-        db.close();
+        //db.close();
         return categoryList;
+    }
+
+    public void deleteCategory(DBOperations dbo, Category category){
+        String selection = DBData.Category.CATEGORY_NAME + " LIKE ? AND "
+                + DBData.Category.GOAL + " LIKE ?";
+
+        String args[] = {category.getCategoryName(), String.valueOf(category.getGoal())};
+
+        SQLiteDatabase db = dbo.getWritableDatabase();
+        db.delete(DBData.Category.TABLE_NAME, selection, args);
+        db.close();
     }
 
     /**
@@ -280,35 +305,37 @@ public class DBOperations extends SQLiteOpenHelper {
      * <p>This updates the goal of a category</p>
      * @param dbo database operation object
      * @param oldName old name of the category
-     * @param newcat category object with new info
+     * @param newCat category object with new info
      */
-    public void UpdateCategory(DBOperations dbo, String oldName, Category newcat){
+    public void UpdateCategory(DBOperations dbo, String oldName, Category newCat){
         SQLiteDatabase sq = dbo.getWritableDatabase();
         String selection = DBData.Category.CATEGORY_NAME + " LIKE ?";
         String args[] = {oldName};
         ContentValues values = new ContentValues();
 
-        values.put(DBData.Category.CATEGORY_NAME, newcat.getCategoryName());
-        values.put(DBData.Category.GOAL, String.valueOf(newcat.getGoal()));
+        Log.i("UpdateCategory", String.valueOf(newCat.getGoal()));
+
+        values.put(DBData.Category.CATEGORY_NAME, newCat.getCategoryName());
+        values.put(DBData.Category.GOAL, String.valueOf(newCat.getGoal()));
         sq.update(DBData.Category.TABLE_NAME, values, selection, args);
 
-        SimpleDateFormat format = new SimpleDateFormat("mm yyyy");
+        SimpleDateFormat format = new SimpleDateFormat("MM yyyy");
         String date = format.format(new Date());
 
-        UpdateExpenseCategory(dbo, oldName, newcat, date);
+        UpdateExpenseCategory(dbo, oldName, newCat, date);
     }
 
     /**
      * <p>This updates the category for an expense</p>
      * @param dbo database operation object
      */
-    public void UpdateExpenseCategory(DBOperations dbo, String oldname, Category newcat, String date){
+    public void UpdateExpenseCategory(DBOperations dbo, String oldName, Category newCat, String date){
         SQLiteDatabase sq = dbo.getWritableDatabase();
         String selection = DBData.Expense.CATEGORY + " LIKE ? AND " + DBData.Expense.DATE + " LIKE ?";
-        String args[] = {oldname, date};
+        String args[] = {oldName, date};
         ContentValues values = new ContentValues();
 
-        values.put(DBData.Expense.CATEGORY, newcat.getCategoryName());
+        values.put(DBData.Expense.CATEGORY, newCat.getCategoryName());
         sq.update(DBData.Expense.TABLE_NAME, values, selection, args);
     }
 
